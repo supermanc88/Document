@@ -124,4 +124,4 @@ python install.py --clang-completer
 ./install.sh --clang-completer --system-libclang
 ```
 
-以上二先一
+以上二选一
