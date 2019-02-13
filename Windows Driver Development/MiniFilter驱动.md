@@ -58,3 +58,170 @@ fltmc unload
 
 卸载minifilter驱动程序时会调用minifilter驱动程序的`FilterUnloadCallback`例程。此例程关闭所有打开的通信服务器端口，调用`FltUnregisterFilter`，并执行任何所需的清理。注册此例程是可选的，但是，如果minifilter驱动程序未注册此例程，则无法卸载minifilter驱动。
 
+**MiniFilter注册相关代码实现**
+```
+// 此段代码应该放在驱动初始化DriverEntry处。
+status = FltRegisterFilter(DriverObject, &FilterRegistration, &g_FilterHandle);		//注册过滤器
+
+if (NT_SUCCESS(status))
+{
+	status = FltStartFiltering(g_FilterHandle);
+
+	if (!NT_SUCCESS(status))
+	{
+		KdPrint(("MiniFilter注册失败\n"));
+		FltUnregisterFilter(g_FilterHandle);
+	}
+}
+
+```
+
+```
+// minifilter反注册放在minifilter卸载回调函数中
+NTSTATUS
+	MiniFilterUnload(
+	_In_ FLT_FILTER_UNLOAD_FLAGS Flags
+	)
+{
+	//卸载回调函数
+	FltUnregisterFilter(g_FilterHandle);
+	return STATUS_SUCCESS;
+}
+```
+
+
+### FltRegisterFilter函数注册了什么？
+
+以下是API的声明：
+
+```
+NTSTATUS FLTAPI FltRegisterFilter(
+  PDRIVER_OBJECT         Driver,
+  const FLT_REGISTRATION *Registration,
+  PFLT_FILTER            *RetFilter
+);
+```
+
+注意第二个参数`FLT_REGISTERATION`结构体。
+
+```
+typedef struct _FLT_REGISTRATION {
+  USHORT                                      Size;
+  USHORT                                      Version;
+  FLT_REGISTRATION_FLAGS                      Flags;
+  const FLT_CONTEXT_REGISTRATION              *ContextRegistration;
+  const FLT_OPERATION_REGISTRATION            *OperationRegistration;
+  PFLT_FILTER_UNLOAD_CALLBACK                 FilterUnloadCallback;
+  PFLT_INSTANCE_SETUP_CALLBACK                InstanceSetupCallback;
+  PFLT_INSTANCE_QUERY_TEARDOWN_CALLBACK       InstanceQueryTeardownCallback;
+  PFLT_INSTANCE_TEARDOWN_CALLBACK             InstanceTeardownStartCallback;
+  PFLT_INSTANCE_TEARDOWN_CALLBACK             InstanceTeardownCompleteCallback;
+  PFLT_GENERATE_FILE_NAME                     GenerateFileNameCallback;
+  PFLT_NORMALIZE_NAME_COMPONENT               NormalizeNameComponentCallback;
+  PFLT_NORMALIZE_CONTEXT_CLEANUP              NormalizeContextCleanupCallback;
+  PFLT_TRANSACTION_NOTIFICATION_CALLBACK      TransactionNotificationCallback;
+  PFLT_NORMALIZE_NAME_COMPONENT_EX            NormalizeNameComponentExCallback;
+  PFLT_SECTION_CONFLICT_NOTIFICATION_CALLBACK SectionNotificationCallback;
+} FLT_REGISTRATION, *PFLT_REGISTRATION;
+```
+
+此结构体包含了minifilter所用到的回调函数，除了`size`和`version`参数不为空且固定以外，其余参数皆可为NULL。
+
+- size处固定填`sizeof(FLT_REGISTRATION)`
+- version处固定填`FLT_REGISTRATION_VERSION`
+- Flags处一般为NULL
+- ContextRegistration处是一个FLT_CONTEXT_REGISTRATION结构的变长数组，用于标明minifilter使用的上下文类型。数组必须以`{FLT_CONTEXT_END}`结尾。
+- OperationRegistration是一个`FLT_OPERATION_REGISTRATION`结构的变长数组，每个IRP请求类型对应一个，minifilter为它注册预操作和后操作。数组中的最后一个元素必须以`{IRP_MJ_OPERATION_END}`结尾
+- FilterUnloadCallback注册过滤器的卸载例程，如果为NULL的话，则minifilter不能卸载。
+- InstanceSetupCallback是minifilter安装的回调例程，每个卷要加载都会经过此例程的处理。
+- 其余参数用的不多，自己也不太了解
+
+
+## MiniFilter通信
+
+minifilter通过`通信端口`进行用户模式和内核模式之间的通信。
+
+拿下面代码作讲解：
+
+```
+	status = RtlCreateSecurityDescriptor(&miniFltSd, SECURITY_DESCRIPTOR_REVISION);
+
+	if (!NT_SUCCESS(status)) {
+		return status;
+	}
+
+	RtlSetDaclSecurityDescriptor(&miniFltSd, TRUE, NULL, FALSE);
+
+	RtlInitUnicodeString(&uniString, MINISPY_PORT_NAME);
+
+	InitializeObjectAttributes(&miniFltOa,
+		&uniString,
+		OBJ_KERNEL_HANDLE | OBJ_CASE_INSENSITIVE,
+		NULL,
+		&miniFltSd);
+
+
+
+	status = FltCreateCommunicationPort(g_FilterHandle,
+		&g_ServerPort,
+		&miniFltOa,
+		NULL,
+		FDMiniConnect,
+		FDMiniDisconnect,
+		FDMiniMessage,
+		50);			//修改客户端最大连接数
+
+	if (!NT_SUCCESS(status)) {
+
+		if (NULL != g_ServerPort) {
+			FltCloseCommunicationPort(g_ServerPort);
+		}
+
+		if (NULL != g_FilterHandle) {
+			FltUnregisterFilter(g_FilterHandle);
+		}
+	}
+```
+这一套就是一个固定的流程，着重看一下`FltCreateCommunicationPort`这个函数
+
+```
+NTSTATUS FLTAPI FltCreateCommunicationPort(
+  PFLT_FILTER            Filter,
+  PFLT_PORT              *ServerPort,
+  POBJECT_ATTRIBUTES     ObjectAttributes,
+  PVOID                  ServerPortCookie,
+  PFLT_CONNECT_NOTIFY    ConnectNotifyCallback,
+  PFLT_DISCONNECT_NOTIFY DisconnectNotifyCallback,
+  PFLT_MESSAGE_NOTIFY    MessageNotifyCallback,
+  LONG                   MaxConnections
+);
+```
+- Filter 这里填`FltRegisterFilter`返回的过滤器的句柄
+- ServerPort 这里生成一个用于通信的端口
+- ObjectAttributes 指向`OBJECT_ATTRIBUTES`结构的指针
+- ConnectNotifyCallback 当用户模式应用程序向驱动发送连接请求时，minifilter就会调用此例程
+- DisconnectNotifyCallback 当用户态与内核态连接结束时，minifilter会调用此例程
+- MessageNotifyCallback 当用户态与内核态传送数据时，minifilter会调用此例程
+- MaxConnections 此端口允许的最大并发客户端连接数，此参数必需，且必须大于0
+
+## 重要函数
+
+1. FltGetDiskDeviceObject
+返回一个与给定的卷相关联的磁盘设备对象
+```
+NTSTATUS FLTAPI FltGetDiskDeviceObject(
+  PFLT_VOLUME    Volume,
+  PDEVICE_OBJECT *DiskDeviceObject
+);
+```
+> 此函数增加了`*DiskDeviceObject`中返回的设备对象指针的引用计数。当不再需要此指针时，调用者必须通过调用`ObDereferenceObject`来减少此引用计数。如果不这样做，则会导致系统释放或删除设备对象失败。
+
+2. FltGetDeviceObject
+返回一个指向给定卷的过滤管理器的卷设备对象(The FltGetDeviceObject routine returns a pointer to the Filter Manager's volume device object (VDO) for a given volume.)
+```
+NTSTATUS FLTAPI FltGetDeviceObject(
+  PFLT_VOLUME    Volume,
+  PDEVICE_OBJECT *DeviceObject
+);
+```
+> 此函数在使用过后，如不再使用DeviceObject，也需要调用`ObDereferenceObject`来减少引用计数。
