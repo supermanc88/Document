@@ -130,8 +130,230 @@ typedef struct _FLT_REGISTRATION {
 - size处固定填`sizeof(FLT_REGISTRATION)`
 - version处固定填`FLT_REGISTRATION_VERSION`
 - Flags处一般为NULL
-- ContextRegistration处是一个FLT_CONTEXT_REGISTRATION结构的变长数组，用于标明minifilter使用的上下文类型。数组必须以`{FLT_CONTEXT_END}`结尾。
-- OperationRegistration是一个`FLT_OPERATION_REGISTRATION`结构的变长数组，每个IRP请求类型对应一个，minifilter为它注册预操作和后操作。数组中的最后一个元素必须以`{IRP_MJ_OPERATION_END}`结尾
+- ContextRegistration处是一个FLT_CONTEXT_REGISTRATION结构的变长数组，用于标明minifilter使用的上下文类型。数组必须以`{FLT_CONTEXT_END}`结尾。示例如下：
+	```
+	CONST FLT_CONTEXT_REGISTRATION ContextNotifications[] = {
+
+		{ FLT_VOLUME_CONTEXT,
+		0,
+		CleanupVolumeContext,
+		sizeof(VOLUME_CONTEXT),
+		FILE_DISK_POOL_TAG },
+
+		{ FLT_STREAMHANDLE_CONTEXT,
+		0,
+		NULL,
+		sizeof(SCANNER_STREAM_HANDLE_CONTEXT),
+		FILE_DISK_POOL_TAG },
+
+		{ FLT_CONTEXT_END }
+	};
+	```
+- OperationRegistration是一个`FLT_OPERATION_REGISTRATION`结构的变长数组，每个IRP请求类型对应一个，minifilter为它注册预操作和后操作。数组中的最后一个元素必须以`{IRP_MJ_OPERATION_END}`结尾，示例如下：
+	```
+	CONST FLT_OPERATION_REGISTRATION Callbacks[] = {
+
+	#if 0 // TODO - List all of the requests to filter.
+		{ IRP_MJ_CREATE,
+		  0,
+		  FsFilter1PreOperation,
+		  FsFilter1PostOperation },
+
+		{ IRP_MJ_CREATE_NAMED_PIPE,
+		  0,
+		  FsFilter1PreOperation,
+		  FsFilter1PostOperation },
+
+		{ IRP_MJ_CLOSE,
+		  0,
+		  FsFilter1PreOperation,
+		  FsFilter1PostOperation },
+
+		{ IRP_MJ_READ,
+		  0,
+		  FsFilter1PreOperation,
+		  FsFilter1PostOperation },
+
+		{ IRP_MJ_WRITE,
+		  0,
+		  FsFilter1PreOperation,
+		  FsFilter1PostOperation },
+
+		{ IRP_MJ_QUERY_INFORMATION,
+		  0,
+		  FsFilter1PreOperation,
+		  FsFilter1PostOperation },
+
+		{ IRP_MJ_SET_INFORMATION,
+		  0,
+		  FsFilter1PreOperation,
+		  FsFilter1PostOperation },
+
+		{ IRP_MJ_QUERY_EA,
+		  0,
+		  FsFilter1PreOperation,
+		  FsFilter1PostOperation },
+
+		{ IRP_MJ_SET_EA,
+		  0,
+		  FsFilter1PreOperation,
+		  FsFilter1PostOperation },
+
+		{ IRP_MJ_FLUSH_BUFFERS,
+		  0,
+		  FsFilter1PreOperation,
+		  FsFilter1PostOperation },
+
+		{ IRP_MJ_QUERY_VOLUME_INFORMATION,
+		  0,
+		  FsFilter1PreOperation,
+		  FsFilter1PostOperation },
+
+		{ IRP_MJ_SET_VOLUME_INFORMATION,
+		  0,
+		  FsFilter1PreOperation,
+		  FsFilter1PostOperation },
+
+		{ IRP_MJ_DIRECTORY_CONTROL,
+		  0,
+		  FsFilter1PreOperation,
+		  FsFilter1PostOperation },
+
+		{ IRP_MJ_FILE_SYSTEM_CONTROL,
+		  0,
+		  FsFilter1PreOperation,
+		  FsFilter1PostOperation },
+
+		{ IRP_MJ_DEVICE_CONTROL,
+		  0,
+		  FsFilter1PreOperation,
+		  FsFilter1PostOperation },
+
+		{ IRP_MJ_INTERNAL_DEVICE_CONTROL,
+		  0,
+		  FsFilter1PreOperation,
+		  FsFilter1PostOperation },
+
+		{ IRP_MJ_SHUTDOWN,
+		  0,
+		  FsFilter1PreOperationNoPostOperation,
+		  NULL },                               //post operations not supported
+
+		{ IRP_MJ_LOCK_CONTROL,
+		  0,
+		  FsFilter1PreOperation,
+		  FsFilter1PostOperation },
+
+		{ IRP_MJ_CLEANUP,
+		  0,
+		  FsFilter1PreOperation,
+		  FsFilter1PostOperation },
+
+		{ IRP_MJ_CREATE_MAILSLOT,
+		  0,
+		  FsFilter1PreOperation,
+		  FsFilter1PostOperation },
+
+		{ IRP_MJ_QUERY_SECURITY,
+		  0,
+		  FsFilter1PreOperation,
+		  FsFilter1PostOperation },
+
+		{ IRP_MJ_SET_SECURITY,
+		  0,
+		  FsFilter1PreOperation,
+		  FsFilter1PostOperation },
+
+		{ IRP_MJ_QUERY_QUOTA,
+		  0,
+		  FsFilter1PreOperation,
+		  FsFilter1PostOperation },
+
+		{ IRP_MJ_SET_QUOTA,
+		  0,
+		  FsFilter1PreOperation,
+		  FsFilter1PostOperation },
+
+		{ IRP_MJ_PNP,
+		  0,
+		  FsFilter1PreOperation,
+		  FsFilter1PostOperation },
+
+		{ IRP_MJ_ACQUIRE_FOR_SECTION_SYNCHRONIZATION,
+		  0,
+		  FsFilter1PreOperation,
+		  FsFilter1PostOperation },
+
+		{ IRP_MJ_RELEASE_FOR_SECTION_SYNCHRONIZATION,
+		  0,
+		  FsFilter1PreOperation,
+		  FsFilter1PostOperation },
+
+		{ IRP_MJ_ACQUIRE_FOR_MOD_WRITE,
+		  0,
+		  FsFilter1PreOperation,
+		  FsFilter1PostOperation },
+
+		{ IRP_MJ_RELEASE_FOR_MOD_WRITE,
+		  0,
+		  FsFilter1PreOperation,
+		  FsFilter1PostOperation },
+
+		{ IRP_MJ_ACQUIRE_FOR_CC_FLUSH,
+		  0,
+		  FsFilter1PreOperation,
+		  FsFilter1PostOperation },
+
+		{ IRP_MJ_RELEASE_FOR_CC_FLUSH,
+		  0,
+		  FsFilter1PreOperation,
+		  FsFilter1PostOperation },
+
+		{ IRP_MJ_FAST_IO_CHECK_IF_POSSIBLE,
+		  0,
+		  FsFilter1PreOperation,
+		  FsFilter1PostOperation },
+
+		{ IRP_MJ_NETWORK_QUERY_OPEN,
+		  0,
+		  FsFilter1PreOperation,
+		  FsFilter1PostOperation },
+
+		{ IRP_MJ_MDL_READ,
+		  0,
+		  FsFilter1PreOperation,
+		  FsFilter1PostOperation },
+
+		{ IRP_MJ_MDL_READ_COMPLETE,
+		  0,
+		  FsFilter1PreOperation,
+		  FsFilter1PostOperation },
+
+		{ IRP_MJ_PREPARE_MDL_WRITE,
+		  0,
+		  FsFilter1PreOperation,
+		  FsFilter1PostOperation },
+
+		{ IRP_MJ_MDL_WRITE_COMPLETE,
+		  0,
+		  FsFilter1PreOperation,
+		  FsFilter1PostOperation },
+
+		{ IRP_MJ_VOLUME_MOUNT,
+		  0,
+		  FsFilter1PreOperation,
+		  FsFilter1PostOperation },
+
+		{ IRP_MJ_VOLUME_DISMOUNT,
+		  0,
+		  FsFilter1PreOperation,
+		  FsFilter1PostOperation },
+
+	#endif // TODO
+
+		{ IRP_MJ_OPERATION_END }
+	};
+	```
 - FilterUnloadCallback注册过滤器的卸载例程，如果为NULL的话，则minifilter不能卸载。
 - InstanceSetupCallback是minifilter安装的回调例程，每个卷要加载都会经过此例程的处理。
 - 其余参数用的不多，自己也不太了解
@@ -259,15 +481,50 @@ NTSTATUS FLTAPI FltSendMessage(
 - 如果应用程序在超时间隔到期之前调用`FilterReplyMessage`，则minifilter驱动程序将收到回复，并且`FltSendMessage`将返回`STATUS_SUCCESS`
 - 否则，minifilter驱动程序不会收到回复，`FltSendMessage`将返回`STATUS_TIMEOUT`
 
-其中用户模式的函数详见[用户模式](#用户模式)
+其中用户模式的函数详见[用户模式](###用户模式)
 
 
 ### 用户模式
 
 - FilterConnectCommunicationPort
 - FilterGetMessage
+	
+	```
+	HRESULT FilterGetMessage(
+	  HANDLE                 hPort,
+	  PFILTER_MESSAGE_HEADER lpMessageBuffer,
+	  DWORD                  dwMessageBufferSize,
+	  LPOVERLAPPED           lpOverlapped
+	);
+	```
+	- hPort 调用`FilterConnectCommunicationPort`返回的通信端口句柄。
+	- lpMessageBuffer 指向缓冲区的指针，该缓冲区接收来自minifilter的消息。消息必须包含`FILTER_MESSAGE_HEADER`结构。
+
+
 - FilterReplyMessage
+	
+	```
+	HRESULT FilterReplyMessage(
+	  HANDLE               hPort,
+	  PFILTER_REPLY_HEADER lpReplyBuffer,
+	  DWORD                dwReplyBufferSize
+	);
+	```
+	- lpReplyBuffer 指向缓冲区的指针，该缓冲区包含要发送给minifilter的回复。消息必须包含`FILTER_REPLY_HEADER`结构
+
 - FilterSendMessage
+
+	```
+	HRESULT FilterSendMessage(
+	  HANDLE  hPort,
+	  LPVOID  lpInBuffer,
+	  DWORD   dwInBufferSize,
+	  LPVOID  lpOutBuffer,
+	  DWORD   dwOutBufferSize,
+	  LPDWORD lpBytesReturned
+	);
+	```
+
 
 
 ## 重要函数
@@ -291,3 +548,9 @@ NTSTATUS FLTAPI FltGetDeviceObject(
 );
 ```
 > 此函数在使用过后，如不再使用DeviceObject，也需要调用`ObDereferenceObject`来减少引用计数。
+
+3. FltFlushBuffers
+minifilter给指定的文件刷新缓存
+
+4. FltQueryInformationFile
+获取指定文件的信息
