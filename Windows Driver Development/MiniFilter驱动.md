@@ -141,6 +141,15 @@ typedef struct _FLT_REGISTRATION {
 
 minifilter通过`通信端口`进行用户模式和内核模式之间的通信。
 
+### 内核模式
+
+- FltCloseClientPort
+- FltCloseCommunicationPort
+- FltCreateCommunicationPort
+- FltSendMessage
+
+#### 创建通信端口
+
 拿下面代码作讲解：
 
 ```
@@ -201,8 +210,65 @@ NTSTATUS FLTAPI FltCreateCommunicationPort(
 - ObjectAttributes 指向`OBJECT_ATTRIBUTES`结构的指针
 - ConnectNotifyCallback 当用户模式应用程序向驱动发送连接请求时，minifilter就会调用此例程
 - DisconnectNotifyCallback 当用户态与内核态连接结束时，minifilter会调用此例程
-- MessageNotifyCallback 当用户态与内核态传送数据时，minifilter会调用此例程
+- MessageNotifyCallback 当用户态与内核态传送数据时，用户模式程序调用`FilterSendMessage`通过客户端端口向minifilter驱动程序发送消息，minifilter会调用此例程
 - MaxConnections 此端口允许的最大并发客户端连接数，此参数必需，且必须大于0
+
+详细了解一下接收消息，该函数定义如下：
+```
+typedef NTSTATUS
+(*PFLT_MESSAGE_NOTIFY) (
+      IN PVOID PortCookie,
+      IN PVOID InputBuffer OPTIONAL,
+      IN ULONG InputBufferLength,
+      OUT PVOID OutputBuffer OPTIONAL,
+      IN ULONG OutputBufferLength,
+      OUT PULONG ReturnOutputBufferLength
+      );
+```
+- InputBuffer 是接收到的缓冲区
+- InputBufferLength 接收到的缓冲区长度
+- OutputBuffer 如果minifilter需要回复数据，**注意，OutputBuffer是指向用户模式缓冲区的指针，此指针仅在用户模式过程的上下文中有效，并且只能从try/except块中访问。minifilter调用`ProbeForWrite`来验证这个指针，但是他不能确保缓冲区正确对齐。如果缓冲区包含具有对齐要求的结构，minifilter驱动程序负责执行任何必要的对齐检查。为此，minifilter驱动程序可以使用`IS_ALIGNED`宏。**
+- OutputBufferLength OutputBuffer指向缓冲区的大小
+- ReturnOutputBufferLength 接收OutputBuffer指向的缓冲区中返回的字节数
+
+
+#### 发送消息
+
+minifilter驱动程序使用`FltSendMessage`例程向等待的用户模式应用程序发送消息
+
+```
+NTSTATUS FLTAPI FltSendMessage(
+  PFLT_FILTER    Filter,
+  PFLT_PORT      *ClientPort,
+  PVOID          SenderBuffer,
+  ULONG          SenderBufferLength,
+  PVOID          ReplyBuffer,
+  PULONG         ReplyLength,
+  PLARGE_INTEGER Timeout
+);
+```
+
+> - ClientPort 指向连接端口的指针，此参数详情看`FltCreateCommunicationPort`函数的`ConnectNotifyCallback`项，该函数指针中的有一个ClientPort参数。
+> - SenderBuffer 指向缓冲区的指针，该缓冲区包含要发送到用户模式程序的消息。
+> - SenderBufferLength SenderBuffer指向缓冲区的大小
+> - ReplyBuffer 指向缓冲区的指针，该缓冲区从用户模式程序接收回复。
+> - ReplyBufferLength ReplyBuffer指向缓冲区的大小
+> - Timeout 指向超时时间的指针，时间单位为100纳秒，在应用程序接收到消息之前，驱动程序会进入等待状态，直到在给定的时间内收到回复，如果设置为NULL的话，则minifilter会进入无限等待状态
+
+当minifilter驱动程序向用户模式应用程序使用`FltSendMessage`发送消息后，如果应用程序调用`FilterGetMessage`来获取消息，则minifilter驱动程序会立即传递消息。在传递消息后，如果`ReplyBuffer`为`NULL`，则`FltSendMessage`返回`STATUS_SUCCESS`。否则，如果`Timeout`非零，则minifilter会进入等待状态：
+- 如果应用程序在超时间隔到期之前调用`FilterReplyMessage`，则minifilter驱动程序将收到回复，并且`FltSendMessage`将返回`STATUS_SUCCESS`
+- 否则，minifilter驱动程序不会收到回复，`FltSendMessage`将返回`STATUS_TIMEOUT`
+
+其中用户模式的函数详见[用户模式](#用户模式)
+
+
+### 用户模式
+
+- FilterConnectCommunicationPort
+- FilterGetMessage
+- FilterReplyMessage
+- FilterSendMessage
+
 
 ## 重要函数
 
