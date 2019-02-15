@@ -1,10 +1,12 @@
 ## 同步和异步区别
 - 同步
+
 ![image](./images/1544435336(1).jpg)
 
 如上图，当程序调用DeviceIocontrol时，它的内部会创建一个`IRP_MJ_DEVICE_CONTROL`的IRP，这个IRP传送到驱动的派遣函数中，处理该IRP需要一段时间，直到该IRP处理完毕后，DeviceIoControl才会返回。
 
 - 异步
+
 ![image](./images/1544436001(1).jpg)
 
 和同步不同的是，DeviceIoControl发送IRP到驱动后，不会等待该IRP结束，而是直接返回。当IRP经过一段时间被结束时，操作系统会触发一个IRP相关事件，这个事件可以通知应用程序IRP请求被执行完毕。

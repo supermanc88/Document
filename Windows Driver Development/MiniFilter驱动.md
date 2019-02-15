@@ -1,6 +1,8 @@
 ## MiniFilter驱动加载顺序
 
 每个minifilter驱动程序必须具有称为`altitude`的唯一标识符。
+此值在驱动的inf文件中定义，例如：Instance1.Altitude      = "370030"
+
 当加载微过滤器驱动程序时，微过滤器驱动程序的高度定义其相对于I/O堆栈中其他微过滤器驱动程序的位置。高度是一个无限精度的字符串，被解释为十进制数字。具有较低数值高度的微过滤器驱动器被加载到具有较高数值的微过滤器驱动器下方的I/O堆栈中。
 
 高度越低，加载越早。
@@ -130,7 +132,7 @@ typedef struct _FLT_REGISTRATION {
 - size处固定填`sizeof(FLT_REGISTRATION)`
 - version处固定填`FLT_REGISTRATION_VERSION`
 - Flags处一般为NULL
-- ContextRegistration处是一个FLT_CONTEXT_REGISTRATION结构的变长数组，用于标明minifilter使用的上下文类型。数组必须以`{FLT_CONTEXT_END}`结尾。示例如下：
+- ContextRegistration处是一个FLT_CONTEXT_REGISTRATION结构的变长数组，用于标明minifilter使用的上下文类型。数组必须以`{FLT_CONTEXT_END}`结尾,在分配上下文时会使用到。示例如下：
 	```
 	CONST FLT_CONTEXT_REGISTRATION ContextNotifications[] = {
 
