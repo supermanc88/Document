@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <cstring>
+#include <cstdlib>
 
 //Definition for singly-linked list.
 
@@ -8,7 +9,35 @@ struct ListNode {
 	struct ListNode *next;
 };
 
-struct ListNode* removeNthFromEnd1(struct ListNode* head, int n)
+// Ë«Ö¸Õë½â·¨
+struct ListNode* removeNthFromEnd(struct ListNode* head, int n)
+{
+	// struct ListNode * A = new struct ListNode;
+	struct ListNode * A = (struct ListNode *)malloc(sizeof(struct ListNode));
+	A->next = head;
+	struct ListNode * first, *second;
+	first = A;
+	second = A;
+
+	for (int i = 1; i <= n + 1; i++)
+	{
+		first = first->next;
+	}
+
+	while (first)
+	{
+		first = first->next;
+		second = second->next;
+	}
+
+	second->next = second->next->next;
+
+	return A->next;
+
+}
+
+
+struct ListNode* removeNthFromEnd2(struct ListNode* head, int n)
 {
 	int count = 0;
 
