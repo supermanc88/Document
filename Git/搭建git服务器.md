@@ -124,3 +124,11 @@ Initialized empty Git repository in /home/git/test.git/
 
 > 当修改了ssh默认的端口时
 > git remote add origin ssh://git@xxx:port/repo.git
+
+## 为什么在git服务器上查看不到代码
+```
+# 在test.git目录下初始化git仓库
+
+$ git init --bare
+```
+由于上面初始化git仓库的时候有个`--bare`参数，所以这个仓库只存储代码历史提交信息，纯粹是为了共享，不允许用户直接登录服务器上去修改。
