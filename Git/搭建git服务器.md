@@ -132,3 +132,14 @@ Initialized empty Git repository in /home/git/test.git/
 $ git init --bare
 ```
 由于上面初始化git仓库的时候有个`--bare`参数，所以这个仓库只存储代码历史提交信息，纯粹是为了共享，不允许用户直接登录服务器上去修改。
+
+## 对git用户做一些限制
+默认情况下，我们新建帐号的登录shell是`/bin/bash`，这个配置在`/etc/passwd`文件中：
+```
+root:x:0:0:root:/root:/bin/bash
+git:x:1000:1000::/home/git:/bin/bash
+```
+修改成
+```
+git:x:1000:1000::/home/git:/usr/bin/git-shell
+```
