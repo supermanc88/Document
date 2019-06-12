@@ -57,4 +57,137 @@ VCB结构包含诸如指向内存中根目录结构(即根目录的FCB)的指针
 
 
 p374
+许多Windows NT FSD的实现使用缓存管理器来缓存磁盘卷元数据结构。 这是通过创建流文件对象来表示打开的磁盘卷信息，然后启动对该文件对象的缓存来实现的。
+使用CcMapData（）将数据映射到系统缓存中，并且可以轻松访问它，就像通常由用户线程访问缓存的文件流数据一样。
 
+
+typedef struct _SFsdVolumeControlBlock 
+{
+SFsdldentifier                       Nodeldentifier;
+
+//a resource to protect the fields contained within the VCB   保护VCB中包含的字段的资源
+ERESOURCE                           VCBResource;
+
+// each VCB is accessible on a global linked list 每个VCB都可以在全局链表上访问
+LIST_ENTRY                          NextVCB;
+
+// each VCB points to a VPB structure created by the NT I/O Manager 每个VCB指向由NT I / O管理器创建的VPB结构
+PVPB                                 PtrVPB;
+
+// a set of flags that might mean something useful
+uint32                               VCBFlags;
+
+// A count of the number of open files/directories
+//As long as the count is  != 0, the volume cannot
+// be dismounted or locked.				打开的文件目录数量的计数//只要该计数为！= 0时，无法卸载或锁定卷。
+uint32                              VCBOpenCount;
+
+// we will maintain a global list of IRPs that are pending
+// because of a directory notify request.   我们将维护一个由于目录通知请求而挂起的IRp的全局列表
+LIST_ENTRY                          NextNotifyIRP;
+
+// the above list is protected only by the mutex declared below
+KMUTEX                              NotifylRPMutex;
+
+// for each mounted volume, we create a device object. Here then
+// is a back pointer to that device object	对于每个装载的卷，我们创建一个设备对象。这里//是指向该设备对象的反向指针
+PDEVICE_OBJECT                      VCBDeviceObject;
+
+//We also retain a pointer to the physical device object, which we
+// have mounted ourselves. The I/O Manager passes us a pointer to this
+// device object when requesting a mount operation.   我们还保留了一个指向物理设备对象的指针，我们自己安装了这个对象。 请求挂载操作时，I / O管理器向我们传递指向此//设备对象的指针。
+PDEVICE_OBJECT                      TargetDeviceObject;
+
+// the volume structure contains a pointer to the root directory FCB  卷结构包含一个指向根目录FCB的指针
+PtrSFsdFCB                          PtrRootDirectoryFCB;
+
+// For volume open operations, we do not create a FCB  (we use the VCB
+//   directly instead). Therefore, all CCB structures for the volume
+//    open operation are linked directly to the VCB   对于批量打开操作，我们不创建FCB（我们直接使用VCB）。 因此，卷打开操作的所有CCB结构都直接链接到VCB
+LIST_ENTRY                          VolumeOpenListHead;
+
+// Pointer to a stream file object created for the volume information
+// to be more easily read from secondary storage  (with the support of
+// the NT Cache Manager).      指向为卷信息创建的流文件对象的指针，以便更容易从辅助存储中读取(在NT缓存管理器的支持下)。
+PFILE_OBJECT                        PtrStreamFileObject;
+
+// Required to use the Cache Manager.
+SECTION_OBJECT_POINTERS               SectionObject;
+
+// File sizes required to use the Cache Manager.
+LARGE_INTEGER                        AllocationSize;
+LARGE_INTEGER                        FileSize;
+LARGE_INTEGER                       ValidDataLength;
+} SFsdVCB, *PtrSFsdVCB;
+
+p375
+
+传统文件系统通常操作两种类型的磁盘对象:文件和目录。
+据我们所知，一个文件仅仅代表存储在磁盘上的字节流。
+目录是文件系统定义的结构，包含文件信息；即目录本身没有用，仅作为定位文件的手段，而文件又包含用户的数据。
+
+文件只是目录中包含的命名对象。
+
+很多不太懂
+
+p376
+在大多数UNIX实现中，文件或目录的内存抽象通常称为vnode。在Windows NT系统上，它被称为文件控制块。
+不管用什么术语来表示这种表示，重要的是要注意的是，一个磁盘上的对象必须总是用一个，而且只有一个，FCB来表示。
+因此，即使您的文件系统支持多个链接的文件流，您也应该只创建一个FCB来在内存中表示该文件流，
+而不用考虑两个不同的进程可能使用不同的路径名或标识符来打开同一个磁盘上的对象。
+
+
+p378
+关于FCB结构，您应该注意的第一件事是操作系统不能确定这个结构的内容。
+因此，每个文件系统实现对FCB结构中包含的字段具有完全的灵活性。
+同样，定义的大多数fcb结构将维护一个表示fcb当前引用计数的字段，以及另一个表示fcb当前openhandlecount的字段。
+
+
+p379
+
+虽然Windows NT允许FSD在如何定义自己的FCB结构方面具有相当大的自由度，
+但是与缓存管理器和虚拟内存管理器的成功集成要求某些NT定义的结构也与FCB相关联。
+如果FSD需要使用NT系统缓存并且还支持内存映射文件，则必须与NT CacheManager和VMM集成。
+
+作为成功集成的先决条件，有四个字段必须与每个FCB相关联:
+1. 一个FSRTL_COMMON_FCB_HEADER类型的单个结构
+2. 一个SECTION_OBJECT_POINTERS类型的单个结构
+3. 两个ERESOURCE类型的同步结构(由示例FSD命名为主资源和分页资源)
+
+
+p380
+永远不能从分页池中分配ERESOURCE类型对象，也不应该从pagedmemory分配CommonFCBHeader或SectionObject字段。（也就是说上面的四个结构所用的内存不能是非分页的）
+ 
+内存中的fcb结构何时创建和释放？
+当首次打开字节流并且系统内存中当前不存在表示此字节流的其他FCB结构时
+例如，如果应用程序决定自系统启动以来第一次打开文件foo，则管理foo所在的逻辑卷的FSD会创建一个FCB结构以响应调用者的打开请求（即，处理 IRP_MJ_CREATE请求）。 
+然而，对文件foo的后续请求将不会导致创建新的内存中FCB结构，只要先前创建的FCB结构仍然由FSD保留在存储器中。 
+确定FCB是否仍由FSD保留的因素是由FCB结构中的FSD维护的ReferenceCount字段（或其等价）的值。
+
+如果在接收到新的打开请求时，FSD已经将文件foo的FCB废弃，则FSD将创建新的FCB结构以在内存中表示文件foo。
+
+这个文件控制块结构作为系统内存中可选字节流的唯一表示。只要任何NT组件维护FCB，就保留FCB。
+ReferenceCount值为零意味着可以安全地解除分配FCB，因为此时系统中没有组件正在主动访问与由FCB表示的字节流相关联的字节流。
+
+
+p381
+
+ReferenceCount字段和OpenHandleCount字段。 了解这两个领域的重要性至关重要。
+
+引用计数和打开句柄计数都是由fsd在fcb结构中维护的内部计数，
+因此对于任何其他内核模式或用户模式组件都是不可见的。这两个计数都有助于确定何时FSD可以安全地解除分配FCB结构。
+
+引用计数只是一个数字，表示文件系统驱动程序已知的此FCB结构的完整引用总数。
+只要引用计数不为零，FSD就知道某个组件正在使用FCB，因此FCB结构的内存不能被释放。
+每当FSD响应IRP_MJ_CREATE请求成功的创建/打开操作时，引用计数字段递增1。
+每当为FCB处理关闭操作以响应IRP_MJ_CLOSE请求时，该字段的内容减1。
+如果某些外部组件在FSD不知情的情况下将指针存储到FCB，则与FCB相关联的打开计数将不会增加，因此FSD无法保证一旦引用计数为0就将其保留。
+
+打开句柄计数仅仅表示FCB的未完成的用户打开句柄的数量。
+该字段也作为处理IRP_MJ_CREATE请求的一部分递增; 但是，它仅在响应发给FSD的IRP_MJ_CLEAN请求时递减。
+每当用户进程最后关闭文件句柄时（即，当系统打开文件对象的代表所有用户打开实例的句柄数为0时），I / O管理器向FSD发出IRP_MJ_CLEAN请求。
+
+
+p382
+
+FileObject结构，由NT对象管理器维护。对于文件对象结构，对象管理器维护两个计数，
