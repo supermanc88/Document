@@ -242,19 +242,63 @@ p384
 因此，FCB参考计数不会递减到0，而FCB会保留在内存中。
 
 
+Context control blocks (CCB)
+FSD使用CCB结构来存储对文件流执行的特定打开操作的状态信息。
+如前所述，每个文件流在内存中都用FCB结构表示。然而，
+FCB结构只包含有助于管理用户对整个文件流的访问的信息；它不包含任何关于特定用户打开操作的信息。CCB结构被用于此目的。
 
+**对于文件流上的每次成功打开操作，FSD都会创建一个CCB结构。**每个CCB结构通常以某种方式与代表文件流的唯一FCB结构相关联；
 
+typedef struct _SFsdContextControlBlock {
+SFsdldentifier                       Nodeldentifier;
 
+// Pointer to the associated FCB
+struct _SFsdFileControlBlock         *PtrFCB;
 
+// all CCB structures for a FCB are linked together
+LIST_ENTRY                          NextCCB;
 
+// each CCB is associated with a file object
+PFILE_OBJECT                                                  PtrFileObject;
 
+//  flags  (see  below)  associated  with  this  CCB
+uint32                                                               CCBFlags;
 
+//  current  byte  offset  is  required  sometimes
+LARGE_INTEGER                                                CurrentByteOffset;
 
+//  if  this  CCB  represents  a  directory  object  open,  we  may
+//  need  to  maintain  a  search  pattern
+PSTRING                                                          DirectorySearchPattern;
 
+//  we  must  maintain  user  specified  file  time  values
+uint32                                                            UserSpecifiedTime;
+}   SFsdCCB,    *PtrSFsdCCB;
 
+图9-3显示了三个CCB结构，每个结构都是由一个FSD响应一个IRP_MJ_CREATE请求而创建的。
+两个CCB结构用于同一个文件流(文件#1)，因此它们在FCB #1上链接在一起。
+另一个CCB结构代表了在FCB #2成功打开的一个例子
 
+请注意，在由输入/输出管理器响应打开/创建请求创建的文件对象结构和由FSD创建的CCB结构之间存在一对一的映射。因此，对于一个打开的文件流，只有一个FCB结构被创建，但是对于同一个文件流，可能有许多CCB结构被创建，每一个都作为文件流上成功打开操作的FSD上下文。
 
+为什么文件系统希望创建一个表示每次成功打开操作的CCB结构？
+CCB可用于维护有关使用特定文件对象的线程请求的字节范围锁的信息；如果线程关闭文件句柄而不解锁该句柄的所有未完成的字节范围锁，则FSD可以自动在收到文件对象上的IRP_MJ_CLEANUP清理请求后，通过检查与之关联的CCB上的未完成锁来形成解锁操作。同样地，FSD也经常使用CCB来存储有关下一个偏移量的信息，从中恢复目录搜索操作，以便首先查找并查找应用程序发出的下一个请求。
 
+p386
+FILE OBJECT
+文件对象结构中的每一个都由I / O管理器分配和维护
+文件系统驱动程序负责初始化文件对象结构中的FsContext和FsContext2字段。在图9-3中，您将看到FsContext2字段似乎指向CCB结构。如前所述，打开操作的每个实例都由CCB结构表示，为了能够正确地将文件对象与相应的CCB相关联，在Windows下的大多数文件系统实现都将FsContext2字段初始化为处理IRP_MJ_CREATE请求的一部分，以引用打开操作期间新分配的CCB结构。请注意，这种类型的关联不是由NT IO管理器强制要求的。但是，如果您确实开发了一个过滤器驱动程序，它将自己附加到一个设备对象上，该对象代表一个本地NT文件系统(例如FASTFAT、NTFS或CDFS)的已装载逻辑卷，那么您应该期望文件系统实现已经初始化了FsContext2字段，以引用FSD内部的CCB结构
+
+您的驱动程序必须初始化FsContext字段，以指向与FCB相关联的通用FCB报头结构。该初始化是由FSD执行的，作为处理IRP_MJ_CREATE请求的一部分。
+Fcb->CoFcb = (PFSRTL_COMMON_FCB_HEADER)rFileObject->FsContext;
+
+其他的数据结构
+支持  byte-range  locking
+不懂
+p387
+Support for  a  Dynamic  Name  Lookup  Cache  (DNLC)  implementation
+
+p390
 
 
 
