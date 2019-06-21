@@ -12,6 +12,9 @@ Data->Iopb->Parameters.DirectoryControl.QueryDirectory.FileInformationClass
 对需要隐藏的文件夹进行断链操作：
 ```
 //大致代码如下：
+int modified = 0;
+int removedAllEntries = 1;
+
 SafeBuffer = Data->Iopb->Parameters.DirectoryControl.QueryDirectory.DirectoryBuffer;
 
 currentFileInfo = (PFILE_ID_BOTH_DIR_INFORMATION)SafeBuffer;
@@ -32,6 +35,7 @@ do
 		{
 			previousFileInfo->NextEntryOffset = (ULONG)((PCHAR)currentFileInfo - (PCHAR)previousFileInfo) + nextOffset;
 		}
+		modified = 1;
 	}
 	else
 	{
@@ -39,5 +43,17 @@ do
 	}
 	currentFileInfo = currentFileInfo;
 }while(nextOffset != 0);
+
+if( modified )
+{
+	if( removedAllEntries )
+	{
+		Data->IoStatus.Status = STATUS_NO_MORE_FILES;
+	}
+	else
+	{
+		FltSetCallbackDataDirty( Data );
+	}
+}
 
 ```
