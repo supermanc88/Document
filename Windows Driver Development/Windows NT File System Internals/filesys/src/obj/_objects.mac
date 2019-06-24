@@ -1,0 +1,68 @@
+ALPHA_OBJECTS= \
+    $(_OBJ_DIR)\alpha\sfsdinit.obj \
+    $(_OBJ_DIR)\alpha\create.obj \
+    $(_OBJ_DIR)\alpha\misc.obj \
+    $(_OBJ_DIR)\alpha\cleanup.obj \
+    $(_OBJ_DIR)\alpha\close.obj \
+    $(_OBJ_DIR)\alpha\read.obj \
+    $(_OBJ_DIR)\alpha\write.obj \
+    $(_OBJ_DIR)\alpha\fileinfo.obj \
+    $(_OBJ_DIR)\alpha\flush.obj \
+    $(_OBJ_DIR)\alpha\dircntrl.obj \
+    $(_OBJ_DIR)\alpha\devcntrl.obj \
+    $(_OBJ_DIR)\alpha\shutdown.obj \
+    $(_OBJ_DIR)\alpha\fastio.obj
+
+PASS0_ALPHA_OBJECTS=
+
+MIPS_OBJECTS= \
+    $(_OBJ_DIR)\mips\sfsdinit.obj \
+    $(_OBJ_DIR)\mips\create.obj \
+    $(_OBJ_DIR)\mips\misc.obj \
+    $(_OBJ_DIR)\mips\cleanup.obj \
+    $(_OBJ_DIR)\mips\close.obj \
+    $(_OBJ_DIR)\mips\read.obj \
+    $(_OBJ_DIR)\mips\write.obj \
+    $(_OBJ_DIR)\mips\fileinfo.obj \
+    $(_OBJ_DIR)\mips\flush.obj \
+    $(_OBJ_DIR)\mips\dircntrl.obj \
+    $(_OBJ_DIR)\mips\devcntrl.obj \
+    $(_OBJ_DIR)\mips\shutdown.obj \
+    $(_OBJ_DIR)\mips\fastio.obj
+
+PASS0_MIPS_OBJECTS=
+
+386_OBJECTS= \
+    $(_OBJ_DIR)\i386\sfsdinit.obj \
+    $(_OBJ_DIR)\i386\create.obj \
+    $(_OBJ_DIR)\i386\misc.obj \
+    $(_OBJ_DIR)\i386\cleanup.obj \
+    $(_OBJ_DIR)\i386\close.obj \
+    $(_OBJ_DIR)\i386\read.obj \
+    $(_OBJ_DIR)\i386\write.obj \
+    $(_OBJ_DIR)\i386\fileinfo.obj \
+    $(_OBJ_DIR)\i386\flush.obj \
+    $(_OBJ_DIR)\i386\dircntrl.obj \
+    $(_OBJ_DIR)\i386\devcntrl.obj \
+    $(_OBJ_DIR)\i386\shutdown.obj \
+    $(_OBJ_DIR)\i386\fastio.obj
+
+PASS0_386_OBJECTS=
+
+PPC_OBJECTS= \
+    $(_OBJ_DIR)\ppc\sfsdinit.obj \
+    $(_OBJ_DIR)\ppc\create.obj \
+    $(_OBJ_DIR)\ppc\misc.obj \
+    $(_OBJ_DIR)\ppc\cleanup.obj \
+    $(_OBJ_DIR)\ppc\close.obj \
+    $(_OBJ_DIR)\ppc\read.obj \
+    $(_OBJ_DIR)\ppc\write.obj \
+    $(_OBJ_DIR)\ppc\fileinfo.obj \
+    $(_OBJ_DIR)\ppc\flush.obj \
+    $(_OBJ_DIR)\ppc\dircntrl.obj \
+    $(_OBJ_DIR)\ppc\devcntrl.obj \
+    $(_OBJ_DIR)\ppc\shutdown.obj \
+    $(_OBJ_DIR)\ppc\fastio.obj
+
+PASS0_PPC_OBJECTS=
+

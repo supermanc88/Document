@@ -1,0 +1,30 @@
+# - Execute the "build" command to make the sample FSD driver recognizer
+
+#
+# The TARGETNAME variable is defined by the developer.  It is the name of
+# the target (component) that is being built by this makefile.  It
+# should NOT include any path or file extension information.
+#
+
+TARGETNAME=sfsrec
+
+TARGETPATH=obj
+
+TARGETTYPE=DRIVER
+
+
+INCLUDES=..\inc;\ddk-40\inc;\fsdk-40\inc;
+
+# Source files common to multiple platforms
+
+SOURCES=sfsrec.c
+
+#
+# Next specify any additional options for the compiler.
+#
+C_DEFINES=  -DUNICODE -D_CPU_X86_
+
+# The type of product being built - NT = kernel mode
+
+UMTYPE=nt
+

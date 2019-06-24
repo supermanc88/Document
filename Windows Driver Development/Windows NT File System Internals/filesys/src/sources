@@ -1,0 +1,62 @@
+# - Execute the "build" command to make the sample FSD driver
+
+# The TARGETNAME variable is defined by the developer.  It is the name of
+# the target (component) that is being built by this makefile.  It
+# should NOT include any path or file extension information.
+
+TARGETNAME=sfsd
+
+# The TARGETPATH and TARGETTYPE variables are defined by the developer.
+# The first specifies where the target is to be build.  The second specifies
+# the type of target (either PROGRAM, DYNLINK, LIBRARY, UMAPPL_NOLIB or
+# BOOTPGM).  UMAPPL_NOLIB is used when you're only building user-mode
+# apps and don't need to build a library.
+
+TARGETPATH=obj
+
+TARGETTYPE=DRIVER
+
+# The INCLUDES variable specifies any include paths that are specific to
+# this source directory.  Separate multiple directory paths with single
+# semicolons.  Relative path specifications are okay.  The INCLUDES
+# variable is not required.  Specifying an empty INCLUDES variable
+# (i.e. INCLUDES= ) indicates no include paths are to be searched.
+#
+# NOTE: The "fsdk\inc" refers to the Microsoft supplied Installable File Systems
+#       Developers Kit.
+INCLUDES=..\inc;\ddk-40\inc;\fsdk\inc-40;
+
+# The SOURCES variable is defined by the developer.  It is a list of all the
+# source files for this component.  Each source file should be on a separate
+# line using the line continuation character.  This will minimize merge
+# conflicts if two developers adding source files to the same component.
+# The SOURCES variable is required.  If there are no platform common source
+# files, an empty SOURCES variable should be used. (i.e. SOURCES= )
+
+# Source files common to multiple platforms
+
+SOURCES=sfsdinit.c      \
+        create.c        \
+        misc.c          \
+        cleanup.c       \
+        close.c         \
+        read.c          \
+        write.c         \
+        fileinfo.c      \
+        flush.c         \
+        dircntrl.c      \
+        devcntrl.c      \
+        shutdown.c      \
+        fastio.c
+
+# Next specify any additional options for the compiler.
+# Define the appropriate CPU type (and insert defines
+# in the appropriate header file) to get the right
+# values for "uint8", "uint16" etc. typedefs.
+
+C_DEFINES=      -DUNICODE -D_CPU_X86_
+
+# The type of product being built - NT = kernel mode
+
+UMTYPE=nt
+

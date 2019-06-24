@@ -1,0 +1,20 @@
+ALPHA_OBJECTS= \
+    $(_OBJ_DIR)\alpha\sfsrec.obj
+
+PASS0_ALPHA_OBJECTS=
+
+MIPS_OBJECTS= \
+    $(_OBJ_DIR)\mips\sfsrec.obj
+
+PASS0_MIPS_OBJECTS=
+
+386_OBJECTS= \
+    $(_OBJ_DIR)\i386\sfsrec.obj
+
+PASS0_386_OBJECTS=
+
+PPC_OBJECTS= \
+    $(_OBJ_DIR)\ppc\sfsrec.obj
+
+PASS0_PPC_OBJECTS=
+

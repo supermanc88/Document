@@ -1,0 +1,52 @@
+ALPHA_OBJECTS= \
+    $(_OBJ_DIR)\alpha\sfilter.res \
+    $(_OBJ_DIR)\alpha\sfilinit.obj \
+    $(_OBJ_DIR)\alpha\fastio.obj \
+    $(_OBJ_DIR)\alpha\misc.obj \
+    $(_OBJ_DIR)\alpha\attach.obj \
+    $(_OBJ_DIR)\alpha\dispatch.obj \
+    $(_OBJ_DIR)\alpha\create.obj \
+    $(_OBJ_DIR)\alpha\fsctrl.obj \
+    $(_OBJ_DIR)\alpha\close.obj
+
+PASS0_ALPHA_OBJECTS=
+
+MIPS_OBJECTS= \
+    $(_OBJ_DIR)\mips\sfilter.res \
+    $(_OBJ_DIR)\mips\sfilinit.obj \
+    $(_OBJ_DIR)\mips\fastio.obj \
+    $(_OBJ_DIR)\mips\misc.obj \
+    $(_OBJ_DIR)\mips\attach.obj \
+    $(_OBJ_DIR)\mips\dispatch.obj \
+    $(_OBJ_DIR)\mips\create.obj \
+    $(_OBJ_DIR)\mips\fsctrl.obj \
+    $(_OBJ_DIR)\mips\close.obj
+
+PASS0_MIPS_OBJECTS=
+
+386_OBJECTS= \
+    $(_OBJ_DIR)\i386\sfilter.res \
+    $(_OBJ_DIR)\i386\sfilinit.obj \
+    $(_OBJ_DIR)\i386\fastio.obj \
+    $(_OBJ_DIR)\i386\misc.obj \
+    $(_OBJ_DIR)\i386\attach.obj \
+    $(_OBJ_DIR)\i386\dispatch.obj \
+    $(_OBJ_DIR)\i386\create.obj \
+    $(_OBJ_DIR)\i386\fsctrl.obj \
+    $(_OBJ_DIR)\i386\close.obj
+
+PASS0_386_OBJECTS=
+
+PPC_OBJECTS= \
+    $(_OBJ_DIR)\ppc\sfilter.res \
+    $(_OBJ_DIR)\ppc\sfilinit.obj \
+    $(_OBJ_DIR)\ppc\fastio.obj \
+    $(_OBJ_DIR)\ppc\misc.obj \
+    $(_OBJ_DIR)\ppc\attach.obj \
+    $(_OBJ_DIR)\ppc\dispatch.obj \
+    $(_OBJ_DIR)\ppc\create.obj \
+    $(_OBJ_DIR)\ppc\fsctrl.obj \
+    $(_OBJ_DIR)\ppc\close.obj
+
+PASS0_PPC_OBJECTS=
+

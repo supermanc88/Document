@@ -1,0 +1,38 @@
+# - Execute the "build" command to make the Sample FSD Event-related dll.
+
+#
+# The TARGETNAME variable is defined by the developer.  It is the name of
+# the target (component) that is being built by this makefile.  It
+# should NOT include any path or file extension information.
+#
+
+TARGETNAME=sfsdevnt
+
+TARGETPATH=obj
+
+TARGETTYPE=DYNLINK
+
+INCLUDES=..\inc
+
+# Source files common to multiple platforms
+
+SOURCES=dummy.c       \
+        errmsg.rc
+
+UNICODE=1
+
+#
+# Next specify any additional options for the compiler.
+#
+
+C_DEFINES=-DUNICODE
+
+#
+# Next specify options for the linker.
+#
+
+DLLBASE=0x62900000
+
+UMRES=obj\*\sfsdevnt.res
+
+
