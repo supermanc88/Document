@@ -1,0 +1,24 @@
+ALPHA_OBJECTS= \
+    $(_OBJ_DIR)\alpha\errmsg.res \
+    $(_OBJ_DIR)\alpha\dummy.obj
+
+PASS0_ALPHA_OBJECTS=
+
+MIPS_OBJECTS= \
+    $(_OBJ_DIR)\mips\errmsg.res \
+    $(_OBJ_DIR)\mips\dummy.obj
+
+PASS0_MIPS_OBJECTS=
+
+386_OBJECTS= \
+    $(_OBJ_DIR)\i386\errmsg.res \
+    $(_OBJ_DIR)\i386\dummy.obj
+
+PASS0_386_OBJECTS=
+
+PPC_OBJECTS= \
+    $(_OBJ_DIR)\ppc\errmsg.res \
+    $(_OBJ_DIR)\ppc\dummy.obj
+
+PASS0_PPC_OBJECTS=
+

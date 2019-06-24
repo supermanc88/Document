@@ -1,0 +1,8 @@
+LIBRARY SFSDEVENT
+
+DESCRIPTION 'Sample FSD Event Log Messages'
+
+EXPORTS
+
+    DummyEntryPoint
+
