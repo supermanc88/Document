@@ -28,6 +28,20 @@ Callout 由一组 `Callout Function`和一个用来识别一个Callout的`GUID`�
 
 - 当一个网络数据流将要被终止时，WFP会调用`flowDeleteFn`函数。但是，WFP调用flowDeleteFn是有条件的，只有在这个将要终止的数据流被关联了上下文的情况下，flowDeleteFn都会被调用。
 
+### Callout注册与卸载
+
+注册Callout可以使用`FwpsCalloutRegister0`(Vista开始支持)、`FwpsCalloutRegister1(Win7)`、`FwpsCalloutRegister2(Win8)`
+
+卸载使用：
+
+- `FwpsCalloutUnregisterById0` 使用的是运行注册函数返回的calloutid
+
+- `FwpsCalloutUnregisterByKey0` 使用的是创建callout结构体时填充的calloutkey
+
+### Callout的添加与移除
+
+成功注册callout后，还需要把callout添加到过滤引擎中。
+
 ## 分层
 
 分层是一个容器，里面包含了零个或多个过滤器。此外，分层内部也可能包含一个或多个子层。
