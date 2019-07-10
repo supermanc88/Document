@@ -58,6 +58,8 @@ Callout 由一组 `Callout Function`和一个用来识别一个Callout的`GUID`�
 
 使用`FwpmSubLayerAdd`添加子层。
 
+管理过滤分层标识符：https://docs.microsoft.com/zh-cn/windows-hardware/drivers/network/management-filtering-layer-identifiers
+
 ## 过滤器
 
 **过滤器存在于WFP的分层中。**
