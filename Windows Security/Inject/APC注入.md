@@ -1,0 +1,9 @@
+## APC注入
+
+在Windows系统中，每个线程都会维护一个线程APC队列，通过 `QueueUserAPC` 把一个APC函数添加到指定线程的APC队列。每个线程都有它自己的APC队列，这个APC队列纪录了要求线程去执行的一些APC函数。
+
+当线程alterable状态时，会执行APC函数。
+
+一个线程内部使用SignalObjectAndWait 、SleepEx、WaitForSingleObjectEx、WaitForMultipleObjectsEx或MsgWaitForMultipleObjectsEx等函数把自己挂起时就是进入alertable状态。
+
+注：本文目前只记录了大概原理，详细操作待补。
