@@ -1,0 +1,8 @@
+bu `filelock!efilelock.cpp:2659`
+r $t1=poi(pFilePolicy); 
+ad *;
+as /mu ${/v:buf} @$t1;
+r $t2=$spat("$buf","*WRD*")
+.if(@$t2==0){gc;}
+
+
