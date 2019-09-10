@@ -53,4 +53,4 @@ ReadFile ====> 中介函数NtReadFile ==========> NtReadFile
 那么系统空间堆栈又在哪里呢？每个线程都有自己的系统空间堆栈，其堆栈段寄存器SS和堆栈指针ESP的内容保存在一个`任务状态段`即`TSS`的数据结构里面。与此相应，CPU中有个称为`任务寄存器`即`TR`的段寄存器。每当从用户空间进入系统空间时，CPU就自动根据TR的指引从TSS中获取当前进程的SS和ESP两个寄存器的值。
 
 
-线程控制块`KTHREAD`结构中有个指针`ServiceTable`，指向本线程的系统调用表。这意味着不同的线程可以有不同的系统调用表。不过，实际使用中每个线程的ServiceTable不是指向KeServiceDescriptorTable就是指向KeServiceDescriptorTableShadow，前者仅用于基本系统调用，后者既可用于基本系统调用也可用于win32扩充系统调用。
+线程控制块`KTHREAD`结构中有个指针`ServiceTable`，指向本线程的系统调用表。这意味着不同的线程可以有不同的系统调用表。不过，实际使用中每个线程的ServiceTable不是指向`KeServiceDescriptorTable`就是指向`KeServiceDescriptorTableShadow`，前者仅用于基本系统调用，后者既可用于基本系统调用也可用于win32扩充系统调用。
