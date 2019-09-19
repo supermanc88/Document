@@ -1,0 +1,162 @@
+" Linux Vim Config
+"
+" by supermanc88
+" Update 2019-09-17
+"
+" 基本配置======================================================================================================================
+set nocompatible																  " be iMproved, required
+filetype off																	  " required
+
+set encoding=utf-8
+
+set tabstop=4																	  " 设置制表符长度
+set softtabstop=4																  " 设置软制表符
+set shiftwidth=4																  " 缩进长度
+
+set number																		  " 打开行号
+
+syntax enable																	  "开启语法高亮功能
+syntax on
+ 
+set t_Co=256																	  "指定配色方案为256色
+" 设置代码折叠为手动
+set foldmethod=manual
+"打开文件是默认不折叠代码
+set foldlevelstart=99
+" 基本配置=======================================================================================================================
+
+
+
+" Plug Manager===================================================================================================================
+" vim-plug: Vim plugin manager
+call plug#begin('~/.vim/plugged')
+" 自动补全 此插件安装的时候需要手动编译
+Plug 'Valloric/YouCompleteMe'   ",{'on':[]}			                 	
+" augroup load_ycm
+"     autocmd!
+"     autocmd InsertEnter * call plug#load('YouCompleteMe') | autocmd! load_cmd
+" augroup END
+Plug 'scrooloose/nerdtree'															" 目录树
+"Plug 'jistr/vim-nerdtree-tabs'														" 共享一个目录树
+"Plug 'Xuyuanp/nerdtree-git-plugin'													" 在nerdtree中显示git的信息
+Plug 'vim-airline/vim-airline'														" 状态栏
+"Plug 'majutsushi/tagbar',{'on':'TagbarToggle'}										" 标签插件 非C类禁用 tagbar 不然打开文件卡顿
+" Plug 'kien/ctrlp.vim'																" 文件搜索
+Plug 'vim-airline/vim-airline-themes'												" 状态栏主题
+" Plug 'godlygeek/tabular'															" -------------------
+" Plug 'plasticboy/vim-markdown'														" Vim markdown语法插件
+Plug 'flazz/vim-colorschemes'														" 代码高亮, 主题
+Plug 'hzchirs/vim-material'															" material主题
+" Plug 'stephpy/vim-php-cs-fixer'														" php格式化
+Plug 'Yggdroot/LeaderF', { 'do': '.\install.bat' }									" 搜索插件
+Plug 'supermanc88/gtags'															" gtags
+" Plug 'vim-scripts/cscope.vim'														" cscope
+" Plug 'whatot/gtags-cscope.vim'														" 这个插件包含上面的 cscope和gtags了										
+" Plug 'ludovicchabant/vim-gutentags'												" gtags辅助
+Plug 'ronakg/quickr-preview.vim'													" quickfix 窗口预览
+call plug#end()
+" Plug Manager===================================================================================================================
+
+
+" scheme 配置====================================================================================================================
+colorscheme darkblack
+" colorscheme molokai
+" colorscheme desert
+" set background=light
+"colorscheme vim-material
+" colorscheme wombat
+" scheme 配置====================================================================================================================
+
+
+
+" nerdtree 配置==================================================================================================================
+" nnoremap <silent> <F5> :NERDTree<CR>											   " F5 开启
+nnoremap <silent> <F5> :NERDTreeToggle<CR>											" F5 开启/关闭
+autocmd vimenter * if !argc()|NERDTree|endif										" 打开vim时如果没有文件自动打开NERDTree
+
+" nerdtree-git-plugin 配置
+" let g:NERDTreeIndicatorMapCustom = {
+"     \ "Modified"  : "✹",
+"     \ "Staged"    : "✚",
+"     \ "Untracked" : "✭",
+"     \ "Renamed"   : "➜",
+"     \ "Unmerged"  : "═",
+"     \ "Deleted"   : "✖",
+"     \ "Dirty"     : "✗",
+"     \ "Clean"     : "✔︎",
+"     \ 'Ignored'   : '☒',
+"     \ "Unknown"   : "?"
+"     \ }
+" nerdtree 配置==================================================================================================================
+
+
+
+" YouCompleteMe 配置=============================================================================================================
+let g:ycm_global_ycm_extra_conf = '~/.vim/.ycm_extra_conf.py'						"此处是全局配置文件路径
+let g:ycm_confirm_extra_conf = 0 													"关闭每次导入配置文件前的询问
+"let g:syntastic_always_populate_loc_list = 1 										"方便使用syntastic进行语法检查
+let g:ycm_seed_identifiers_with_syntax=1 											"开启语法关键字补全
+let g:ycm_add_preview_to_completeopt=0												"关闭补全预览
+let g:ycm_semantic_triggers =  {													
+			\ 'c,cpp,python,java,go,erlang,perl': ['re!\w{2}'],
+			\ 'cs,lua,javascript': ['re!\w{2}'],
+			\ }																		"语义补全
+" 补全内容不以分割子窗口形式出现，只显示补全列表
+set completeopt-=preview
+" "修改提示框颜色
+highlight Pmenu ctermfg=0 ctermbg=242 guifg=black guibg=darkgrey
+highlight PmenuSel ctermfg=242 ctermbg=8 guifg=darkgrey guibg=black					
+" 错误标记
+let g:ycm_error_symbol = '?'  "set error or warning signs
+
+" warning标记
+let g:ycm_warning_symbol = '?'
+
+"highlight YcmErrorSign       标记颜色
+"highlight YcmWarningSign ctermbg=none
+"highlight YcmErrorSection      代码中出错字段颜色
+highlight YcmWarningSection ctermbg=none
+"highlight YcmErrorLine        出错行颜色
+"highlight YcmWarningLine
+
+" 跳转快捷键
+nnoremap <c-k> :YcmCompleter GoToDeclaration<CR>|
+nnoremap <c-h> :YcmCompleter GoToDefinition<CR>| 
+nnoremap <c-j> :YcmCompleter GoToDefinitionElseDeclaration<CR>|
+" YouCompleteMe 配置============================================================================================================
+
+
+
+" Gtags 配置====================================================================================================================
+" 用来告诉gtags默认C/C++等原生支持的代码直接使用gtags本地分析器，其他语言使用pygments模块
+let $GTAGSLABEL = 'native-pygments'		
+" 这个必须设置，否则会找不到 native-pygments和 language map 的定义
+let $GTAGSCONF = '/home/superman/.vim/plugged/gtags/gtags.conf'
+" cscope
+set cscopetag                  " 使用 cscope 作为 tags 命令
+set cscopeprg=gtags-cscope   " 使用 gtags-cscope 代替 cscope
+" gtags
+let GtagsCscope_Auto_Load = 1
+let CtagsCscope_Auto_Map = 1
+let GtagsCscope_Quiet = 1
+" Gtags 配置===================================================================================================================
+
+
+
+" LeaderF 配置=================================================================================================================
+noremap <F2> :LeaderfFunction!<cr>           
+let g:Lf_Gtagsconf = '/home/superman/.vim/plugged/gtags/gtags.conf'
+let g:Lf_GtagsAutoGenerate = 1
+let g:Lf_Gtagslabel = 'native-pygments'
+" LeaderF 配置=================================================================================================================
+
+
+
+
+" airline theme 配置===========================================================================================================
+let g:airline_theme='bubblegum'													" airline 主题
+"let g:airline_theme='molokai'													" airline 主题
+let g:airline#extensions#tabline#enabled = 1									" smart tab line 开启
+"let g:airline_theme='material'
+" airline theme 配置===========================================================================================================
+
