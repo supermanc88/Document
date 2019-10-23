@@ -54,16 +54,16 @@ sudo apt-get install python3-dev
 
 编译的参数说明如下：
 >--with-features=huge：支持最大特性\
---enable-rubyinterp：打开对ruby编写的插件的支持
---enable-pythoninterp：打开对python编写的插件的支持\
---enable-python3interp：打开对python3编写的插件的支持\
---enable-luainterp：打开对lua编写的插件的支持\
---enable-perlinterp：打开对perl编写的插件的支持\
---enable-multibyte：打开多字节支持，可以在Vim中输入中文\
---enable-cscope：打开对cscope的支持\
---with-python-config-dir=/usr/lib/python2.7/config-x86_64-linux-gnu/ 指定python 路径\
---with-python-config-dir=/usr/lib/python3.5/config-3.5m-x86_64-linux-gnu/ 指定python3路径\
---prefix=/usr/local/vim：指定将要安装到的路径(自行创建)
+>--enable-rubyinterp：打开对ruby编写的插件的支持
+>--enable-pythoninterp：打开对python编写的插件的支持\
+>--enable-python3interp：打开对python3编写的插件的支持\
+>--enable-luainterp：打开对lua编写的插件的支持\
+>--enable-perlinterp：打开对perl编写的插件的支持\
+>--enable-multibyte：打开多字节支持，可以在Vim中输入中文\
+>--enable-cscope：打开对cscope的支持\
+>--with-python-config-dir=/usr/lib/python2.7/config-x86_64-linux-gnu/ 指定python 路径\
+>--with-python-config-dir=/usr/lib/python3.5/config-3.5m-x86_64-linux-gnu/ 指定python3路径\
+>--prefix=/usr/local/vim：指定将要安装到的路径(自行创建)
 
 ## 安装vim插件YouCompleteMe
 通过vim插件管理下载到了YouCompleteMe的源码，现在需要编译，所需环境：
