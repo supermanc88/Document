@@ -28,7 +28,7 @@ WRK提供了多个版本的hal，为了知道当前系统的hal类型：
 link -dump -all \WINDOWS\system32\hal.dll | findstr pdb
 ```
 
-![image](https://raw.githubusercontent.com/supermanc88/Document/master/VimWindows%20Security/images/1572507617(1).jpg)
+![image](https://raw.githubusercontent.com/supermanc88/Document/master/Windows%20Security/images/1572507617(1).jpg)
 
 在WRK中，根据以下关系选择相应的HAL库：
 
@@ -51,5 +51,8 @@ halapic.dll->halmps.dll
 multi(0)disk(0)rdisk(0)partition(1)\WINDOWS="WRK V1.2" /kernel=wrkx86.exe /hal=halmacpi.dll
 multi(0)disk(0)rdisk(0)partition(1)\WINDOWS="WRK V1.2[debug]" /kernel=wrkx86.exe /hal=halmacpi.dll /debug /debugport=com1 /baudrate=115200
 ```
+
+虚拟机进行如下设置：
+![image](https://raw.githubusercontent.com/supermanc88/Document/master/Windows%20Security/images/1572509079(1).jpg)
 
 至此，调试环境搭建完成
