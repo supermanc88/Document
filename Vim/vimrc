@@ -37,22 +37,14 @@ Plug 'Valloric/YouCompleteMe'   ",{'on':[]}
 "     autocmd InsertEnter * call plug#load('YouCompleteMe') | autocmd! load_cmd
 " augroup END
 Plug 'scrooloose/nerdtree'															" 目录树
-"Plug 'jistr/vim-nerdtree-tabs'														" 共享一个目录树
-"Plug 'Xuyuanp/nerdtree-git-plugin'													" 在nerdtree中显示git的信息
 Plug 'vim-airline/vim-airline'														" 状态栏
-"Plug 'majutsushi/tagbar',{'on':'TagbarToggle'}										" 标签插件 非C类禁用 tagbar 不然打开文件卡顿
-" Plug 'kien/ctrlp.vim'																" 文件搜索
 Plug 'vim-airline/vim-airline-themes'												" 状态栏主题
-" Plug 'godlygeek/tabular'															" -------------------
 " Plug 'plasticboy/vim-markdown'														" Vim markdown语法插件
 Plug 'flazz/vim-colorschemes'														" 代码高亮, 主题
 Plug 'hzchirs/vim-material'															" material主题
-" Plug 'stephpy/vim-php-cs-fixer'														" php格式化
-Plug 'Yggdroot/LeaderF', { 'do': '.\install.bat' }									" 搜索插件
+" Plug 'Yggdroot/LeaderF', { 'do': '.\install.bat' }									" 搜索插件 Windows上使用此命令
+Plug 'Yggdroot/LeaderF', { 'do': './install.sh' }									" Linux 上使用此命令
 Plug 'supermanc88/gtags'															" gtags
-" Plug 'vim-scripts/cscope.vim'														" cscope
-" Plug 'whatot/gtags-cscope.vim'														" 这个插件包含上面的 cscope和gtags了										
-" Plug 'ludovicchabant/vim-gutentags'												" gtags辅助
 Plug 'ronakg/quickr-preview.vim'													" quickfix 窗口预览
 call plug#end()
 " Plug Manager===================================================================================================================
@@ -92,7 +84,7 @@ autocmd vimenter * if !argc()|NERDTree|endif										" 打开vim时如果没有
 
 
 " YouCompleteMe 配置=============================================================================================================
-let g:ycm_global_ycm_extra_conf = '~/.vim/.ycm_extra_conf.py'						"此处是全局配置文件路径
+let g:ycm_global_ycm_extra_conf = '/home/superman/.vim/.ycm_extra_conf.py'						"此处是全局配置文件路径
 let g:ycm_confirm_extra_conf = 0 													"关闭每次导入配置文件前的询问
 "let g:syntastic_always_populate_loc_list = 1 										"方便使用syntastic进行语法检查
 let g:ycm_seed_identifiers_with_syntax=1 											"开启语法关键字补全
