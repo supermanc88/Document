@@ -44,3 +44,27 @@ extern int AddTwo(int a, int b);
 extern "C" int AddTwo(int a, int b);
 ```
 
+## 汇编调用C/C++函数
+
+例：
+
+```
+.model flat, stdcall
+
+include aaa.inc
+AddTwo proto C, a:dword, b:dword
+printf proto C
+```
+
+STDCALL是和WinAPI兼容，但是它与C程序的调用规范不匹配。因此在声明由汇编模块调用的外部C或C++函数时，要给proto加上C的限定符。
+
+如果在.model时声明和函数调用一致时，则不需要加限定符。
+
+如：
+
+```
+.model flat, stdcall
+include windows.inc
+ReadFile proto, FileHandel:dword, lpBuffer:dword, numberToRead:dword, numberofRead:dword, lpOverlapped:dword
+```
+
