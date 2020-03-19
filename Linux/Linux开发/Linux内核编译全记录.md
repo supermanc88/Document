@@ -43,6 +43,19 @@ Linux内核有多种方式去编译：
 
 目前来看，我什么也不知道，就先按照默认的来编译吧，选择save并退出
 
+### 内核调试选项
+
+选择 `Kernel hacking`中的内容：
+
+```
+Kernel hacking--->  
+       -*- Magic SysRq key  
+       [*] Kernel debugging  
+       [*] Compile the kernel with debug info  
+       [*] KGDB: kernel debugging with remote gdb --->  
+              <*> KGDB: use kgdb over the serial console  
+```
+
 
 ## 编译
 
@@ -68,7 +81,7 @@ make -j2 # 其中的2是编译时所使用的线程数
 
 ## 安装
 
-安装模块：
+### 安装模块：
 
 ```
 make modules_install
@@ -79,15 +92,30 @@ make modules_install
 ![image](./images/1583396589(1).jpg)
 
 
-内核安装
+### 内核安装
+
+这是在内核install之前的情况：
+
+建议备份initrd和vmlinuz，虽然他们会自己备份。
+
+![image](./images/1584632963(1).jpg)
+
+再看看源码目录,多出了个vmlinux文件：
+
+![image](./images/1584633211(1).png)
+
 
 ```
 make install
 ```
 
+执行make install，将会拷贝源码目录下的vmlinux到/boot/目录并压缩为vmlinuz，并创建initrd
+
 安装完成后会在`/boot/`目录下生成对应版本的目录
 
 ![image](./images/1583396860(1).jpg)
+
+![image](./images/1584633351(1).png)
 
 一切没问题后，查看一下`/boot/grub/grub.conf`
 
@@ -107,7 +135,30 @@ make install
 sudo update-grub
 ```
 
+#### 为KGDB内核创建新的启动项
+
+新增的KGDB启动项，与原始启动项相比只增加了一个参数：`kgdboc=ttyS0,115200`
+
+如果需要目标机一启动就断住（比如要调试启动阶段的代码），则再增加一个参数`kgdbwait`
+
+![image](./images/1584634467(1).jpg)
+
+修改之后，必须运行：
+
+```
+sudo update-grub
+```
+
+修改已更新：
+
+![image](./images/1584634592(1).png)
+
 重启系统时就可以选择内核了
+
+
+## 内核调试虚拟机配置
+
+
 
 
 
