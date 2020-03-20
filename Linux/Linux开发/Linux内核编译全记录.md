@@ -158,7 +158,74 @@ sudo update-grub
 
 ## 内核调试虚拟机配置
 
+### 调试环境一
 
+主机：manjaro 
+
+被调试机：虚拟机ubuntu
+
+虚拟机配置串口：
+
+![image](./images/v2-8b728aaa77aefedc1a51797525486c17_720w.jpg)
+
+自定义名为： `/tmp/isocket`
+
+其中/tmp/isocket是一个文件，主机和虚拟机利用这个文件进行串口通信。
+
+主机需要两个程序socat和telnet
+
+在主机terminal里：
+
+```shell
+socat /tmp/isocket tcp-listen:9001 &
+telnet 127.0.0.1 9001
+```
+
+在虚拟机上：
+
+```shell
+cat /dev/ttyS0
+```
+
+此时主机terminal里输入信息虚拟机可以通过ttyS0接收到。
+
+
+#echo ‘hello’ > /dev/ttyS0
+
+主机的terminal可以收到
+
+telnet输入Ctrl+]结束
+
+如果串口收发没有问题，可以继续。
+
+然后在主机terminal中
+
+```shell
+socat /tmp/isocket tcp-listen:9001 &
+
+cd <vmlinux所在目录 >
+
+gdb vmlinux
+
+(gdb) target remote:9001
+```
+
+正常情况下就可以调试了
+
+在这里输入c就会把控制权交还给虚拟机，当我们想把控制权交还给主机的gdb是，在虚拟机的terminal中输入
+
+```shell
+echo g>/proc/sysrq-trigger
+```
+
+
+### 调试环境二
+
+主机：虚拟机ubuntu
+
+被调试机：虚拟机buuntu
+
+两个虚拟机为编译出内核后，克隆而来
 
 
 
