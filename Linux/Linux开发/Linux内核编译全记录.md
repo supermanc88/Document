@@ -221,12 +221,36 @@ echo g>/proc/sysrq-trigger
 
 ### 调试环境二
 
-主机：虚拟机ubuntu
+主机：虚拟机ubuntu 最好使用14.0.4 高版本的编译的时候没有frame pointer选项，调试一直有问题，断点打不上
 
 被调试机：虚拟机buuntu
 
 两个虚拟机为编译出内核后，克隆而来
 
+
+主机配置：
+
+![image](./images/1584779659.png)
+
+该端是客户端
+
+被调试机配置：
+
+![image](./images/1584779604(1).png)
+
+该端是服务器
+
+
+开机之后，被调试机和之前一样进入等待调试阶段，
+
+主机使用如下命令：
+
+```
+gdb --baud 11520 vmlinux
+target remote /dev/ttyS0
+```
+
+开始调试。
 
 
 
