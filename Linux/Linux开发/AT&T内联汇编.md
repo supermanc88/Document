@@ -47,3 +47,14 @@ int main()
 
 https://www.cnblogs.com/hdk1993/p/4820353.html
 
+|限定符|意义|
+|--|--|
+|"m"、"v"、"o"|内存单元|
+|"r"|任何寄存器|
+|"q"|寄存器eax、ebx、ecx、edx之一|
+|"i"、"h"|直接操作数|
+|"E"和"F"|浮点数|
+|"g"|任意|
+|"a"、"b"、"c"、"d"|分别表示寄存器eax、ebx、ecx和edx|
+|"S"和"D"|寄存器esi、edi|
+|"I"|常数（0至31）|
