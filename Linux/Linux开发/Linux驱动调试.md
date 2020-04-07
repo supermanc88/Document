@@ -61,3 +61,28 @@ Breakpoint 1 at 0xffffffffa058a140: file /home/superman/Documents/input_event_in
 遇到问题：
 
 调试机现在可下断点，但目标机运行时，在断点处不会断下来。
+
+---
+
+以上方法是断不下来的，现使用下面的方式
+
+```
+// 被调试机
+[root@localhost Documents]# cat /sys/module/input_event_inlinehook/sections/.text 
+0xffffffffa057e000
+
+// 调试机
+(gdb) add-symbol-file /home/superman/Documents/input_event_inlinehook.ko 0xffffffffa057e000 -s .bss 0xffffffffa057e5b0 -s .data 0xffffffffa057e2a0
+add symbol table from file "/home/superman/Documents/input_event_inlinehook.ko" at
+	.text_addr = 0xffffffffa057e000
+	.bss_addr = 0xffffffffa057e5b0
+	.data_addr = 0xffffffffa057e2a0
+(y or n) y
+Reading symbols from /home/superman/Documents/input_event_inlinehook.ko...done.
+```
+
+
+
+**注意**
+
+在gcc和gdb版本不匹配的情况下，可能会出现`Single stepping until exit... which has no line number information`的情况，gcc(4.4)、gdb(7.8)测试可用。
