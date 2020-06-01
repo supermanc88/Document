@@ -2,7 +2,7 @@
 
 多路IO转接服务器
 
-![image-20200601151745180](images/select/image-20200601151745180.png)
+![image-20200601151745180](https://raw.githubusercontent.com/supermanc88/ImageSources/master/select2.png)
 
 
 
@@ -59,5 +59,5 @@ FD_ISSET(fd1, &readfds) --- 1 满足
 
 
 
-![select2](images/select/select2.png)
+![select2](https://raw.githubusercontent.com/supermanc88/ImageSources/master/image-20200601151745180.png)
 
