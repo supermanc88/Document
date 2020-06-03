@@ -1,0 +1,111 @@
+# epoll
+
+
+
+## epoll
+
+是Linux下多路复用IO接口select/poll的增强版本。
+
+
+
+epoll 可以找到监控的哪个文件描述符被激活了，不用像select和poll那样去遍历
+
+
+
+当连接的描述符比较多，但监听的比较少，推荐使用epoll
+
+
+
+- 向Linux内核建议要创建多大的红黑树，实际使用时可以超过这个值
+
+```c
+       #include <sys/epoll.h>
+
+       int epoll_create(int size);	// 要监听的个数
+```
+
+返回值：其实是一个文件描述符，句柄（树根）
+
+
+
+内核原理：平衡二叉树(红黑树)，返回的描述符指向这根树的树根
+
+
+
+- 向之前创建的红黑树添加、修改、或删除节点
+
+```c
+       #include <sys/epoll.h>
+
+       int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event);
+
+           typedef union epoll_data {
+               void        *ptr;
+               int          fd;
+               uint32_t     u32;
+               uint64_t     u64;
+           } epoll_data_t;
+
+           struct epoll_event {
+               uint32_t     events;      /* Epoll events */
+               epoll_data_t data;        /* User data variable */
+           };
+```
+
+struct epoll_event *event： 结构体指针
+
+
+
+op:add/mod/del
+
+
+
+- 监听节点
+
+```c
+       #include <sys/epoll.h>
+
+       int epoll_wait(int epfd, struct epoll_event *events, // 数组，传出参数
+                      int maxevents, int timeout);
+```
+
+truct epoll_event *events 返回epoll_ctl中被激活的文件描述符，这是个结构体数组
+
+
+
+timeout ：
+
+​				-1 阻塞
+
+​				0 立即返回
+
+​				>0 毫秒
+
+返回值，成功返回有多少个文件描述符就绪。
+
+
+
+## epoll ET
+
+
+
+## epoll LT
+
+
+
+
+
+## epoll 非阻塞IO
+
+
+
+
+
+## epoll 反应堆模型(libevent 核心思想实现)
+
+
+
+## 线程池
+
+
+
