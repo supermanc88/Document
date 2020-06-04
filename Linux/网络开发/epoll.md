@@ -85,6 +85,36 @@ timeout ：
 
 
 
+### 结构体分析
+
+```c
+           typedef union epoll_data {
+               void        *ptr;
+               int          fd;
+               uint32_t     u32;
+               uint64_t     u64;
+           } epoll_data_t;
+
+           struct epoll_event {
+               uint32_t     events;      /* Epoll events */
+               epoll_data_t data;        /* User data variable */
+           };
+```
+
+
+
+events:监听事件
+
+data：fd，u32，u64， void * ptr
+
+
+
+平时我们都填充fd，用来返回的时候，它就是被激活的文件描述符。
+
+这个epoll_data是我们自己填充的，epoll_wait返回时，不会修改epoll_event中的数据。
+
+
+
 ## epoll ET
 
 
