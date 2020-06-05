@@ -115,23 +115,63 @@ data：fd，u32，u64， void * ptr
 
 
 
+---
+
+提升程序执行效率，减少wait执行次数
+
+
+
+边沿触发：epoll ET
+
+水平触发：epoll LT
+
+
+
+![image-20200605133928894](https://raw.githubusercontent.com/supermanc88/ImageSources/master/image-20200605133928894.png)
+
+当低电平向高电平或高电平到低电平转换时，这种叫边沿触发
+
+当持续高电平或持续低电平时，这种叫小平触发
+
+
+
 ## epoll ET
+
+
+
+EPOLLIN | EPOLLET
+
+
+
+ET模式可以减少epoll_wait可以减少调用次数
+
+
+
+和read使用非阻塞方式一起使用。
 
 
 
 ## epoll LT
 
-
+EPOLLIN 默认情况下就是水平触发
 
 
 
 ## epoll 非阻塞IO
 
+详见codes/noblock_epolls目录下代码
 
+
+
+**其实就是给连接的文件描述符使用fcntl给它设置noblock**
 
 
 
 ## epoll 反应堆模型(libevent 核心思想实现)
+
+
+
+
 
 
 
