@@ -18,3 +18,24 @@ STDIN_FILENO/STDOUT_FILENO/STDERR_FILENO分别代表文件描述符0、1、2。
 
 
 
+## /dev/fd/
+
+在/dev/fd目录下，其目录项是名为0、1、2等的文件。打开文件/dev/fd/n等效于复制描述符n
+
+
+
+如：
+
+```c
+fd = open("/dev/fd/0", mode);
+
+// 等同
+
+fd = dup(0);
+```
+
+一般情况下，参数mode在大部分系统下被忽略，而另外一些系统要求mode必须是所引用的文件**初始打开时所使用的打开模式的一个子集**。
+
+
+
+![image-20200606172438112](https://raw.githubusercontent.com/supermanc88/ImageSources/master/image-20200606172438112.png)
