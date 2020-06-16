@@ -14,6 +14,16 @@
 
 
 
+另辟蹊径：
+
+连续使用两次fork避免僵尸进程。
+
+![image-20200616171551843](https://raw.githubusercontent.com/supermanc88/ImageSources/master/image-20200616171551843.png)
+
+
+
+> fork出子进程后，子进程马上fork出孙进程，子进程马上关闭，那么孙进程就会被`init`进程领养，就不会存在僵尸进程了。
+
 ### wait函数
 
 功能：
