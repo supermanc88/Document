@@ -53,7 +53,19 @@ IPC：InterProcess Communication
 
 
 
+### 非阻塞标志(O_NONBLOCK)：
 
+- 阻塞模式：只读open要阻塞到某个进程以只写方式打开此FIFO，只写open要阻塞到某个进程以只读方式打开此FIFO;
+
+- 非阻塞模式：只读立即返回，如果没有进程以只读方式打开FIFO，则只写open返回-1，erron=ENXIO;
+
+
+
+### 一端关闭
+
+- 若读一个已经关闭写端的FIFO，则读取完数据后，会读到文件结束符，read返回0；
+
+- 若写一个已经关闭读端的FIFO，则产生SIGPIPE;
 
 ## 共享内存
 
