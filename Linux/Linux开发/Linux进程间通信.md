@@ -67,6 +67,10 @@ IPC：InterProcess Communication
 
 - 若写一个已经关闭读端的FIFO，则产生SIGPIPE;
 
+
+
+代码详见：code/fifo
+
 ## 共享内存
 
 
