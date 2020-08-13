@@ -137,7 +137,7 @@ sudo update-grub
 
 #### 为KGDB内核创建新的启动项
 
-新增的KGDB启动项，与原始启动项相比只增加了一个参数：`kgdboc=ttyS0,115200`
+新增的KGDB启动项，与原始启动项相比只增加了一个参数：`kgdboc=ttyS0,11520`
 
 如果需要目标机一启动就断住（比如要调试启动阶段的代码），则再增加一个参数`kgdbwait`
 
@@ -240,8 +240,15 @@ echo g>/proc/sysrq-trigger
 
 该端是服务器
 
-
 开机之后，被调试机和之前一样进入等待调试阶段，
+
+
+
+```sh
+echo g>/proc/sysrq-trigger
+```
+
+
 
 主机使用如下命令：
 
@@ -255,3 +262,19 @@ target remote /dev/ttyS0
 
 
 
+
+### CentOS安装的debuginfo
+
+
+
+路径如下：
+
+
+
+![image-20200812115534546](images/Linux内核编译全记录/image-20200812115534546.png)
+
+
+
+centos系统中debuginfo查找地址：
+
+http://debuginfo.centos.org/

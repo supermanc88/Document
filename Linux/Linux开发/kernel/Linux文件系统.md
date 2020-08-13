@@ -83,3 +83,95 @@ VFS中有四个主要的对象类型，它们分别是：
 
 
 
+## get_sb分析
+
+
+
+>The get_sb() method has the following arguments:
+>  struct file_system_type *fs_type: describes the filesystem, partly initialized by the specific filesystem code
+>  int flags: mount flags
+>  const char *dev_name: the device name we are mounting.
+>  void *data: arbitrary mount options, usually comes as an ASCII string (see "Mount Options" section)
+>  struct vfsmount *mnt: a vfs-internal representation of a mount point
+
+
+
+共有5个参数：
+
+- fs_type 
+- flags 挂载标志
+- dev_name 将要挂载的设备名
+- data 挂载选项
+- mnt 一个挂载点的vfs内部表示，一个系统实例
+
+
+
+get_sb（）方法必须确定dev_name和fs_type中指定的块设备是否包含该方法支持的文件系统。如果成功打开命名的块设备，它将为该块设备所包含的文件系统初始化一个struct super_block描述符。失败时返回错误。
+
+get_sb（）方法填充的超级块结构中最有趣的成员是“ s_op”字段。这是指向“ struct super_operations”的指针，该指针描述了文件系统实现的下一级。
+
+
+
+## get_sb_nodev 函数分析
+
+
+
+通常，文件系统使用一个通用的get_sb()实现，并提供一个fill_super()方法。
+
+
+
+- get_sb_bdev：安装在块设备上的文件系统
+
+- get_sb_nodev：安装不受设备支持的文件系统
+
+- get_sb_single：安装在以下设备之间共享实例的文件系统
+
+
+
+```c
+int get_sb_nodev(struct file_system_type *fs_type,
+	int flags, void *data,
+	int (*fill_super)(struct super_block *, void *, int),
+	struct vfsmount *mnt)
+{
+	int error;
+	struct super_block *s = sget(fs_type, NULL, set_anon_super, NULL);
+
+	if (IS_ERR(s))
+		return PTR_ERR(s);
+
+	s->s_flags = flags;
+
+	error = fill_super(s, data, flags & MS_SILENT ? 1 : 0);
+	if (error) {
+		deactivate_locked_super(s);
+		return error;
+	}
+	s->s_flags |= MS_ACTIVE;
+	simple_set_mnt(mnt, s);
+	return 0;
+}
+```
+
+
+
+fill_super 是由开发者提供的sb填充的函数指针。
+
+
+
+fill_super函数主要填充的sb结构体中的字段有：
+
+- s_fs_info 文件系统特殊信息，可以存放一些自己构造的数据
+- s_op 超级块操作方法
+- s_root 目录挂载点，`struct dentry *`类型，使用`d_alloc`函数分配
+- s_root->d_op 目录项操作指针
+- s_root->d_sb 文件所属超级块，就是自己
+- s_root->d_parent 父目录的目录项对象
+- s_root->d_fsdata 分配内存，存放文件系统的特有数据
+
+
+
+
+
+
+
