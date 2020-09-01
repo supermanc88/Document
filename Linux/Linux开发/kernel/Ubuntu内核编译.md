@@ -57,6 +57,24 @@
 
 
 
+编译和安装步骤如下
+
+*a. make menuconfig*
+
+*b. make*
+
+*c. make modules*
+
+*d. make modules_install*
+
+*e. make install*
+
+*f. make headers_install*
+
+注意步**骤d和e**不能颠倒，否则生成的initrd.img不能正常启动，因为它依赖于**步骤c**生成的驱动程序.ko文件。
+
+
+
 ### 进入编译选项
 
 
