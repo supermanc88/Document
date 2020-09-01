@@ -141,6 +141,14 @@ make: *** [scripts] Error 2
 
 
 
+error5:
+
+```sh
+warning: Cannot use CONFIG_STACK_VALIDATION=y, please install libelf-dev, libelf-devel or elfutils-libelf-devel
+```
+
+> apt-get install libelf-dev
+
 
 
 ### 编译
