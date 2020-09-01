@@ -246,3 +246,20 @@ make install
 如果要修改在开机时进入引导选择，修改`/etc/default/grub`文件：
 
 ![image-20200901132042392](https://raw.githubusercontent.com/supermanc88/ImageSources/master/image-20200901131720707.png)
+
+
+
+
+
+## 调试
+
+![image-20200901165952193](https://raw.githubusercontent.com/supermanc88/ImageSources/master/image-20200901165952193.png)
+
+
+
+出现这个的原因是：随机化基址
+
+可以在`/boot/grub/grub.cfg`启动参数后加`rodata=off nokaslr`
+
+
+
