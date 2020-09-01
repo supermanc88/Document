@@ -77,6 +77,72 @@ make menuconfig
 
 
 
+#### 错误
+
+
+
+error1:
+
+```sh
+*** Unable to find the ncurses libraries or the
+*** required header files.
+*** 'make menuconfig' requires the ncurses libraries.
+*** Install ncurses (ncurses-devel) and try again.
+```
+
+> sudo apt-get install ncurses-dev
+
+
+
+error2:
+
+```sh
+/bin/sh: 1: flex: not found
+scripts/Makefile.lib:194: recipe for target 'scripts/kconfig/lexer.lex.c' failed
+make[1]: *** [scripts/kconfig/lexer.lex.c] Error 127
+Makefile:552: recipe for target 'menuconfig' failed
+make: *** [menuconfig] Error 2
+```
+
+> sudo apt-get install flex
+
+
+
+error3:
+
+```sh
+  LEX     scripts/kconfig/lexer.lex.c
+  YACC    scripts/kconfig/parser.tab.h
+/bin/sh: 1: bison: not found
+scripts/Makefile.lib:208: recipe for target 'scripts/kconfig/parser.tab.h' failed
+make[1]: *** [scripts/kconfig/parser.tab.h] Error 127
+Makefile:552: recipe for target 'menuconfig' failed
+make: *** [menuconfig] Error 2
+```
+
+> sudo apt-get install bison
+
+
+
+error4:
+
+```sh
+scripts/sign-file.c:25:10: fatal error: openssl/opensslv.h: 没有那个文件或目录
+ #include <openssl/opensslv.h>
+          ^~~~~~~~~~~~~~~~~~~~
+compilation terminated.
+scripts/Makefile.host:92: recipe for target 'scripts/sign-file' failed
+make[1]: *** [scripts/sign-file] Error 1
+Makefile:1065: recipe for target 'scripts' failed
+make: *** [scripts] Error 2
+```
+
+> sudo apt-get install libssl-dev
+
+
+
+
+
 ### 编译
 
 
