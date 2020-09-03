@@ -447,6 +447,7 @@ $1 = {f_u = {fu_llist = {next = 0x0 <fixed_percpu_data>}, fu_rcuhead = {next = 0
 ```c
 	crypt_stat = &ecryptfs_inode_to_private(inode)->crypt_stat;
 	mutex_lock(&crypt_stat->cs_mutex);
+// 新建的节点加密状态是空的，第一次打开时，会给设置上加密标志
 	if (!(crypt_stat->flags & ECRYPTFS_POLICY_APPLIED)) {
 		ecryptfs_printk(KERN_DEBUG, "Setting flags for stat...\n");
 		/* Policy code enabled in future release */
@@ -525,6 +526,7 @@ s->s_op = &ecryptfs_sops;
  			ecryptfs_dentry, rc);
  		goto out_free;
  	}
+// lower_file是file*类型，f_flags是文件打开时的标志，这是比较底层文件打开是只读，当前打开标志不是只读，则退出
  	if ((ecryptfs_inode_to_private(inode)->lower_file->f_flags & O_ACCMODE)
  	    == O_RDONLY && (file->f_flags & O_ACCMODE) != O_RDONLY) {
  		rc = -EPERM;
@@ -560,9 +562,128 @@ s->s_op = &ecryptfs_sops;
 
 
 
+#### read_or_initialize_metadata
+
+```c
+ static int read_or_initialize_metadata(struct dentry *dentry)
+ {
+ 	struct inode *inode = d_inode(dentry);
+ 	struct ecryptfs_mount_crypt_stat *mount_crypt_stat;
+ 	struct ecryptfs_crypt_stat *crypt_stat;
+ 	int rc;
+ 
+ 	crypt_stat = &ecryptfs_inode_to_private(inode)->crypt_stat;
+     // 这是获取了加密文件系统的超级块加密状态
+ 	mount_crypt_stat = &ecryptfs_superblock_to_private(
+ 						inode->i_sb)->mount_crypt_stat;
+ 	mutex_lock(&crypt_stat->cs_mutex);
+ 
+ 	if (crypt_stat->flags & ECRYPTFS_POLICY_APPLIED &&
+ 	    crypt_stat->flags & ECRYPTFS_KEY_VALID) {
+ 		rc = 0;
+ 		goto out;
+ 	}
+ 
+ 	rc = ecryptfs_read_metadata(dentry);
+ 	if (!rc)
+ 		goto out;
+ 
+ 	if (mount_crypt_stat->flags & ECRYPTFS_PLAINTEXT_PASSTHROUGH_ENABLED) {
+ 		crypt_stat->flags &= ~(ECRYPTFS_I_SIZE_INITIALIZED
+ 				       | ECRYPTFS_ENCRYPTED);
+ 		rc = 0;
+ 		goto out;
+ 	}
+ 
+ 	if (!(mount_crypt_stat->flags & ECRYPTFS_XATTR_METADATA_ENABLED) &&
+ 	    !i_size_read(ecryptfs_inode_to_lower(inode))) {
+ 		rc = ecryptfs_initialize_file(dentry, inode);
+ 		if (!rc)
+ 			goto out;
+ 	}
+ 
+ 	rc = -EIO;
+ out:
+ 	mutex_unlock(&crypt_stat->cs_mutex);
+ 	return rc;
+ }
+```
 
 
 
+#### ecryptfs_read_metadata分析
+
+
+
+
+
+
+
+## 节点操作
+
+
+
+```c
+ const struct super_operations ecryptfs_sops = {
+ 	.alloc_inode = ecryptfs_alloc_inode,
+ 	.destroy_inode = ecryptfs_destroy_inode,
+ 	.free_inode = ecryptfs_free_inode,
+ 	.statfs = ecryptfs_statfs,
+ 	.remount_fs = NULL,
+ 	.evict_inode = ecryptfs_evict_inode,
+ 	.show_options = ecryptfs_show_options
+ };
+```
+
+
+
+
+
+### ecryptfs_alloc_inode
+
+```c
+ static struct inode *ecryptfs_alloc_inode(struct super_block *sb)
+ {
+ 	struct ecryptfs_inode_info *inode_info;
+ 	struct inode *inode = NULL;
+ 
+ 	inode_info = kmem_cache_alloc(ecryptfs_inode_info_cache, GFP_KERNEL);
+ 	if (unlikely(!inode_info))
+ 		goto out;
+ 	if (ecryptfs_init_crypt_stat(&inode_info->crypt_stat)) {
+ 		kmem_cache_free(ecryptfs_inode_info_cache, inode_info);
+ 		goto out;
+ 	}
+ 	mutex_init(&inode_info->lower_file_mutex);
+ 	atomic_set(&inode_info->lower_file_count, 0);
+ 	inode_info->lower_file = NULL;
+ 	inode = &inode_info->vfs_inode;
+ out:
+ 	return inode;
+ }
+```
+
+
+
+```c
+ /* inode private data. */
+ struct ecryptfs_inode_info {
+ 	struct inode vfs_inode;
+ 	struct inode *wii_inode;
+ 	struct mutex lower_file_mutex;
+ 	atomic_t lower_file_count;
+ 	struct file *lower_file;
+ 	struct ecryptfs_crypt_stat crypt_stat;
+ };
+```
+
+
+
+每创建一个inode节点，便申请分配一个`ecryptfs_inode_info`结构体
+
+
+
+注意`inode_info->lower_file = NULL;`这里，`lower_file`并未设置，在`ecryptfs_open`中会被设置。
 
 
 
