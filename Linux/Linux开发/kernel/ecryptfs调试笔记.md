@@ -346,7 +346,45 @@ out:
 
 
 
-## ecryptfs_open
+## 文件操作
+
+```c
+ const struct file_operations ecryptfs_dir_fops = {
+ 	.iterate_shared = ecryptfs_readdir,
+ 	.read = generic_read_dir,
+ 	.unlocked_ioctl = ecryptfs_unlocked_ioctl,
+ #ifdef CONFIG_COMPAT
+ 	.compat_ioctl = ecryptfs_compat_ioctl,
+ #endif
+ 	.open = ecryptfs_dir_open,
+ 	.release = ecryptfs_dir_release,
+ 	.fsync = ecryptfs_fsync,
+ 	.llseek = ecryptfs_dir_llseek,
+ };
+ 
+ const struct file_operations ecryptfs_main_fops = {
+ 	.llseek = generic_file_llseek,
+ 	.read_iter = ecryptfs_read_update_atime,
+ 	.write_iter = generic_file_write_iter,
+ 	.unlocked_ioctl = ecryptfs_unlocked_ioctl,
+ #ifdef CONFIG_COMPAT
+ 	.compat_ioctl = ecryptfs_compat_ioctl,
+ #endif
+ 	.mmap = ecryptfs_mmap,
+ 	.open = ecryptfs_open,
+ 	.flush = ecryptfs_flush,
+ 	.release = ecryptfs_release,
+ 	.fsync = ecryptfs_fsync,
+ 	.fasync = ecryptfs_fasync,
+ 	.splice_read = generic_file_splice_read,
+ };
+```
+
+在linux内核中，文件的操作由一个`file_operations`结构体表示，其中成员是各种文件操作函数指针。
+
+
+
+### ecryptfs_open
 
 
 
@@ -415,6 +453,7 @@ $1 = {f_u = {fu_llist = {next = 0x0 <fixed_percpu_data>}, fu_rcuhead = {next = 0
 		crypt_stat->flags |= (ECRYPTFS_POLICY_APPLIED
 				      | ECRYPTFS_ENCRYPTED);
 	}
+	mutex_unlock(&crypt_stat->cs_mutex);
 
 static inline struct ecryptfs_inode_info *
 ecryptfs_inode_to_private(struct inode *inode)
@@ -422,4 +461,114 @@ ecryptfs_inode_to_private(struct inode *inode)
 	return container_of(inode, struct ecryptfs_inode_info, vfs_inode);
 }
 ```
+
+
+
+#### inode和ecryptfs_inode_info关系解释
+
+需要看下`ecryptfs_inode_to_private`为什么`inode`地址会和`ecryptfs_inode_info`地址相关？
+
+在`ecryptfs_mount`函数中有这么一行代码：
+
+```c
+s->s_op = &ecryptfs_sops;
+
+// ecryptfs_sops具体内容：
+ const struct super_operations ecryptfs_sops = {
+ 	.alloc_inode = ecryptfs_alloc_inode,
+ 	.destroy_inode = ecryptfs_destroy_inode,
+ 	.free_inode = ecryptfs_free_inode,
+ 	.statfs = ecryptfs_statfs,
+ 	.remount_fs = NULL,
+ 	.evict_inode = ecryptfs_evict_inode,
+ 	.show_options = ecryptfs_show_options
+ };
+
+```
+
+
+
+在`ecryptfs_alloc_inode`函数中有相关代码：
+
+```c
+ static struct inode *ecryptfs_alloc_inode(struct super_block *sb)
+ {
+ 	struct ecryptfs_inode_info *inode_info;
+ 	struct inode *inode = NULL;
+ 
+ 	inode_info = kmem_cache_alloc(ecryptfs_inode_info_cache, GFP_KERNEL);
+ 	if (unlikely(!inode_info))
+ 		goto out;
+ 	if (ecryptfs_init_crypt_stat(&inode_info->crypt_stat)) {
+ 		kmem_cache_free(ecryptfs_inode_info_cache, inode_info);
+ 		goto out;
+ 	}
+ 	mutex_init(&inode_info->lower_file_mutex);
+ 	atomic_set(&inode_info->lower_file_count, 0);
+ 	inode_info->lower_file = NULL;
+ 	inode = &inode_info->vfs_inode;
+ out:
+ 	return inode;
+ }
+```
+
+在这个函数中，会直接创建一个`inode_info`，其中的`vfs_inode`就是文件操作中所使用的`inode`节点。
+
+
+
+```c
+ 	rc = ecryptfs_get_lower_file(ecryptfs_dentry, inode);
+ 	if (rc) {
+ 		printk(KERN_ERR "%s: Error attempting to initialize "
+ 			"the lower file for the dentry with name "
+ 			"[%pd]; rc = [%d]\n", __func__,
+ 			ecryptfs_dentry, rc);
+ 		goto out_free;
+ 	}
+ 	if ((ecryptfs_inode_to_private(inode)->lower_file->f_flags & O_ACCMODE)
+ 	    == O_RDONLY && (file->f_flags & O_ACCMODE) != O_RDONLY) {
+ 		rc = -EPERM;
+ 		printk(KERN_WARNING "%s: Lower file is RO; eCryptfs "
+ 		       "file must hence be opened RO\n", __func__);
+ 		goto out_put;
+ 	}
+ 	ecryptfs_set_file_lower(
+ 		file, ecryptfs_inode_to_private(inode)->lower_file);
+ 	rc = read_or_initialize_metadata(ecryptfs_dentry);
+ 	if (rc)
+ 		goto out_put;
+ 	ecryptfs_printk(KERN_DEBUG, "inode w/ addr = [0x%p], i_ino = "
+ 			"[0x%.16lx] size: [0x%.16llx]\n", inode, inode->i_ino,
+ 			(unsigned long long)i_size_read(inode));
+ 	goto out;
+ out_put:
+ 	ecryptfs_put_lower_file(inode);
+ out_free:
+ 	kmem_cache_free(ecryptfs_file_info_cache,
+ 			ecryptfs_file_to_private(file));
+ out:
+ 	return rc;
+```
+
+
+
+`ecryptfs_get_lower_file`通过`ecryptfs_dentry`来填充`inode`中的`lower_file`结构
+
+并通过`ecryptfs_set_file_lower`将`file`的私有数据指针指向下层的file结构
+
+`read_or_initialize_metadata` 函数读取文件的元数据，如文件标题信息、属性等
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
