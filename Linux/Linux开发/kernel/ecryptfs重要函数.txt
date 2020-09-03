@@ -1,0 +1,80 @@
+ecryptfs_inode_set    在mount时被调用，此函数设置节点的相关操作函数
+
+
+文件操作结构体：
+
+const struct file_operations ecryptfs_dir_fops = {
+	.iterate_shared = ecryptfs_readdir,
+	.read = generic_read_dir,
+	.unlocked_ioctl = ecryptfs_unlocked_ioctl,
+#ifdef CONFIG_COMPAT
+	.compat_ioctl = ecryptfs_compat_ioctl,
+#endif
+	.open = ecryptfs_dir_open,
+	.release = ecryptfs_dir_release,
+	.fsync = ecryptfs_fsync,
+	.llseek = ecryptfs_dir_llseek,
+};
+
+const struct file_operations ecryptfs_main_fops = {
+	.llseek = generic_file_llseek,
+	.read_iter = ecryptfs_read_update_atime,
+	.write_iter = generic_file_write_iter,
+	.unlocked_ioctl = ecryptfs_unlocked_ioctl,
+#ifdef CONFIG_COMPAT
+	.compat_ioctl = ecryptfs_compat_ioctl,
+#endif
+	.mmap = ecryptfs_mmap,
+	.open = ecryptfs_open,
+	.flush = ecryptfs_flush,
+	.release = ecryptfs_release,
+	.fsync = ecryptfs_fsync,
+	.fasync = ecryptfs_fasync,
+	.splice_read = generic_file_splice_read,
+};
+
+
+节点操作结构体：
+
+const struct inode_operations ecryptfs_symlink_iops = {
+	.get_link = ecryptfs_get_link,
+	.permission = ecryptfs_permission,
+	.setattr = ecryptfs_setattr,
+	.getattr = ecryptfs_getattr_link,
+	.listxattr = ecryptfs_listxattr,
+};
+
+const struct inode_operations ecryptfs_dir_iops = {
+	.create = ecryptfs_create,
+	.lookup = ecryptfs_lookup,
+	.link = ecryptfs_link,
+	.unlink = ecryptfs_unlink,
+	.symlink = ecryptfs_symlink,
+	.mkdir = ecryptfs_mkdir,
+	.rmdir = ecryptfs_rmdir,
+	.mknod = ecryptfs_mknod,
+	.rename = ecryptfs_rename,
+	.permission = ecryptfs_permission,
+	.setattr = ecryptfs_setattr,
+	.listxattr = ecryptfs_listxattr,
+};
+
+const struct inode_operations ecryptfs_main_iops = {
+	.permission = ecryptfs_permission,
+	.setattr = ecryptfs_setattr,
+	.getattr = ecryptfs_getattr,
+	.listxattr = ecryptfs_listxattr,
+};
+
+
+超级块操作：
+
+const struct super_operations ecryptfs_sops = {
+	.alloc_inode = ecryptfs_alloc_inode,
+	.destroy_inode = ecryptfs_destroy_inode,
+	.free_inode = ecryptfs_free_inode,
+	.statfs = ecryptfs_statfs,
+	.remount_fs = NULL,
+	.evict_inode = ecryptfs_evict_inode,
+	.show_options = ecryptfs_show_options
+};
