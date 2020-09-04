@@ -872,7 +872,101 @@ VFS通过系统调用`create`和`open`来调用该函数，从而为dentry对象
 
 
 
+### ecryptfs_setattr
+
+```c
+static int ecryptfs_setattr(struct dentry *dentry, struct iattr *ia)
+{
+	int rc = 0;
+	struct dentry *lower_dentry;
+	struct iattr lower_ia;
+	struct inode *inode;
+	struct inode *lower_inode;
+	struct ecryptfs_crypt_stat *crypt_stat;
+
+    // 先判断当前节点的加密状态，如果没有进行初始化，需要先初始化状态
+	crypt_stat = &ecryptfs_inode_to_private(d_inode(dentry))->crypt_stat;
+	if (!(crypt_stat->flags & ECRYPTFS_STRUCT_INITIALIZED)) {
+		rc = ecryptfs_init_crypt_stat(crypt_stat);
+		if (rc)
+			return rc;
+	}
+	inode = d_inode(dentry);
+	lower_inode = ecryptfs_inode_to_lower(inode);
+	lower_dentry = ecryptfs_dentry_to_lower(dentry);
+	mutex_lock(&crypt_stat->cs_mutex);
+    // 如果是文件夹，则把加密状态取消
+	if (d_is_dir(dentry))
+		crypt_stat->flags &= ~(ECRYPTFS_ENCRYPTED);
+    // 如果是通常的文件
+	else if (d_is_reg(dentry)
+		 && (!(crypt_stat->flags & ECRYPTFS_POLICY_APPLIED)
+		     || !(crypt_stat->flags & ECRYPTFS_KEY_VALID))) {
+		struct ecryptfs_mount_crypt_stat *mount_crypt_stat;
+
+        // 取出超级块的加密信息来
+		mount_crypt_stat = &ecryptfs_superblock_to_private(
+			dentry->d_sb)->mount_crypt_stat;
+		rc = ecryptfs_get_lower_file(dentry, inode);
+		if (rc) {
+			mutex_unlock(&crypt_stat->cs_mutex);
+			goto out;
+		}
+		rc = ecryptfs_read_metadata(dentry);
+		ecryptfs_put_lower_file(inode);
+		if (rc) {
+			if (!(mount_crypt_stat->flags
+			      & ECRYPTFS_PLAINTEXT_PASSTHROUGH_ENABLED)) {
+				rc = -EIO;
+				printk(KERN_WARNING "Either the lower file "
+				       "is not in a valid eCryptfs format, "
+				       "or the key could not be retrieved. "
+				       "Plaintext passthrough mode is not "
+				       "enabled; returning -EIO\n");
+				mutex_unlock(&crypt_stat->cs_mutex);
+				goto out;
+			}
+			rc = 0;
+			crypt_stat->flags &= ~(ECRYPTFS_I_SIZE_INITIALIZED
+					       | ECRYPTFS_ENCRYPTED);
+		}
+	}
+	mutex_unlock(&crypt_stat->cs_mutex);
+
+	rc = setattr_prepare(dentry, ia);
+	if (rc)
+		goto out;
+	if (ia->ia_valid & ATTR_SIZE) {
+		rc = ecryptfs_inode_newsize_ok(inode, ia->ia_size);
+		if (rc)
+			goto out;
+	}
+
+	memcpy(&lower_ia, ia, sizeof(lower_ia));
+	if (ia->ia_valid & ATTR_FILE)
+		lower_ia.ia_file = ecryptfs_file_to_lower(ia->ia_file);
+	if (ia->ia_valid & ATTR_SIZE) {
+		rc = truncate_upper(dentry, ia, &lower_ia);
+		if (rc < 0)
+			goto out;
+	}
+
+	/*
+	 * mode change is for clearing setuid/setgid bits. Allow lower fs
+	 * to interpret this in its own way.
+	 */
+	if (lower_ia.ia_valid & (ATTR_KILL_SUID | ATTR_KILL_SGID))
+		lower_ia.ia_valid &= ~ATTR_MODE;
+
+	inode_lock(d_inode(lower_dentry));
+	rc = notify_change(lower_dentry, &lower_ia, NULL);
+	inode_unlock(d_inode(lower_dentry));
+out:
+	fsstack_copy_attr_all(inode, lower_inode);
+	return rc;
+}
+```
 
 
 
-
+修改更新一个节点的元数据，底层节点也修改。
