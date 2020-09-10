@@ -263,6 +263,19 @@ make install
 
 
 
+有的在输入
+
+```c
+echo g > /proc/sysrq-trigger
+```
+
+中断不生效，这是因为sysrq在ubuntu系统未开启：
+
+```c
+echo 1 > /proc/sys/kernel/sysrq
+```
+
+使用上面命令开启
 ### gdb调试命令
 
 ```sh
@@ -270,4 +283,7 @@ set serial baud 115200
 
 target remote /dev/ttyS0
 ```
+
+
+
 
