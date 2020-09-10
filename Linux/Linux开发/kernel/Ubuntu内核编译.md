@@ -263,3 +263,11 @@ make install
 
 
 
+### gdb调试命令
+
+```sh
+set serial baud 115200
+
+target remote /dev/ttyS0
+```
+
