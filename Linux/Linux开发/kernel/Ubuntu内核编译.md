@@ -173,6 +173,20 @@ warning: Cannot use CONFIG_STACK_VALIDATION=y, please install libelf-dev, libelf
 
 
 
+#### 编译优化
+
+```c
+void __attribute__((optimize("O0"))) foo(unsigned char data) {
+    // unmodifiable compiler code
+}
+```
+
+虽然内核编译的时候，不能使用`-O0`方式去代码优化，但可以把单独的几个函数去优化，只要给函数加上`__attribute__((optimize("O0")))`属性即可。
+
+
+
+#### 开始编译
+
 ```sh
 make
 ```
