@@ -290,6 +290,19 @@ echo 1 > /proc/sys/kernel/sysrq
 ```
 
 使用上面命令开启
+
+
+
+在调试的过程中，时间长了程序会自动中止，加上以下命令：
+
+```sh
+echo 0 > /proc/sys/kernel/hung_task_timeout_secs
+```
+
+
+
+
+
 ### gdb调试命令
 
 ```sh
