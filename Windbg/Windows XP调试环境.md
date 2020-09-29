@@ -13,6 +13,7 @@
 ## windbg配置：
 
 windbg启动参数添加
+```shell
+-b -k com:port=//./pipe/com_1,baud=115200,pipe
 ```
- -b -k com:pipe,port=\\.\pipe\com_1,resets=0
-```
+
