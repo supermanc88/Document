@@ -2,12 +2,12 @@
 
 ## 虚拟机配置
 
-![vm](./images/1559628616(1).jpg)
+![vm](https://raw.githubusercontent.com/supermanc88/ImageSources/master/1559628616(1).jpg)
 
 
 ## 在xp下运行msconfig
 
-![xp](./images/1559628917(1).jpg)
+![xp](https://raw.githubusercontent.com/supermanc88/ImageSources/master/1559628917(1).jpg)
 打开调试
 
 ## windbg配置：
