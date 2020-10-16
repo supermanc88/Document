@@ -31,3 +31,11 @@ lmvm模块名	查看模块详细信息
 例：
 
 ![image-20200929182901320](https://raw.githubusercontent.com/supermanc88/ImageSources/master/image-20200929182901320.png)
+
+
+
+
+
+x 列出模块的符号
+
+![image-20201009110236170](https://raw.githubusercontent.com/supermanc88/ImageSources/master/image-20201009110236170.png)
