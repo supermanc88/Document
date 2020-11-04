@@ -31,6 +31,16 @@ fi
 
 
 
+此脚本依赖`debootstrap`
+
+```sh
+apt-get install debootstrap
+```
+
+
+
+
+
 ```sh
 sh create-image.sh --feature full
 ```
