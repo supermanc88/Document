@@ -4,7 +4,7 @@
 
 ## 获取驱动模块的基址
 
-![img](images/gdb调试内核模块(ko)/33695fd212954f2aa4dcf513ac40d5f7.png)
+![img](https://raw.githubusercontent.com/supermanc88/ImageSources/master/33695fd212954f2aa4dcf513ac40d5f7.png)
 
 ```shell
 cat /proc/modules | grep drv1
@@ -25,7 +25,7 @@ cat /sys/module/drv1/section/.text
 
 加载符号文件同时为驱动的Open函数设置断点，如下图所示
 
-![img](images/gdb调试内核模块(ko)/57df302f6c58477bbc2854474bb94817.png)
+![img](https://raw.githubusercontent.com/supermanc88/ImageSources/master/57df302f6c58477bbc2854474bb94817.png)
 
 
 
