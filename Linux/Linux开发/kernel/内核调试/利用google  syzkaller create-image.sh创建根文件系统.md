@@ -31,6 +31,22 @@ fi
 
 
 
+修改下载源：
+
+将地址修改为国内，方便快速下载
+
+```shell
+# 1. debootstrap stage
+
+DEBOOTSTRAP_PARAMS="--include=$PREINSTALL_PKGS --components=main,contrib,non-free $RELEASE $DIR http://ftp.cn.debian.org/debian/"
+if [ $ARCH != $(uname -m) ]; then
+    DEBOOTSTRAP_PARAMS="--arch=$DEBARCH --foreign $DEBOOTSTRAP_PARAMS"
+fi
+sudo debootstrap $DEBOOTSTRAP_PARAMS
+```
+
+
+
 此脚本依赖`debootstrap`
 
 ```sh
