@@ -18,16 +18,16 @@ bash rime-install wubi pinyin-simp
 
 ## 配置rime
 
-![setting](./images/2019-11-17_00-49-36.png)
+![setting](https://raw.githubusercontent.com/supermanc88/ImageSources/master/2019-11-17_00-49-36.png)
 
 在`default.yaml`中添加上输入法
 
-![setting](./images/2019-11-17_00-52-01.png)
+![setting](https://raw.githubusercontent.com/supermanc88/ImageSources/master/2019-11-17_00-52-01.png)
 
 
 ## 添加输入源
 
-![inputsource](./images/2019-11-17_00-37-06.png)
+![inputsource](https://raw.githubusercontent.com/supermanc88/ImageSources/master/2019-11-17_00-37-06.png)
 
 重启操作系统就可以用了
 
@@ -50,13 +50,13 @@ bash rime-install emoji:customize:schema=luna_pinyin
 
 ### Windows安装
 
-![windowssetupemoji](./images/1575944204(1).jpg)
+![windowssetupemoji](https://raw.githubusercontent.com/supermanc88/ImageSources/master/1575944204(1).jpg)
 
-![windowssetupemoji1](./images/1575944294(1).jpg)
+![windowssetupemoji1](https://raw.githubusercontent.com/supermanc88/ImageSources/master/1575944294(1).jpg)
 
 在windows上使用官方方法不容易成功，现使用手动方式：
 
-![manualsetup](./images/1575950308(1).jpg)
+![manualsetup](https://raw.githubusercontent.com/supermanc88/ImageSources/master/1575950308(1).jpg)
 
 在安装emoji后，用户文件夹中会出现`emoji_suggestion.yaml`和`opencc`文件夹。
 
