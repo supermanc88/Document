@@ -234,3 +234,54 @@ display
 disassemble
 ```
 
+
+
+## TUI模式
+
+### 开启TUI模式
+
+```shell
+gdb --tui vmlinux
+```
+
+### 关闭TUI模式
+
+```
+Ctrl + X + A
+```
+
+### 更换激活窗口
+
+```
+Ctrl + X + O
+```
+
+### 窗口滚动
+
+*PgUp*
+
+激活窗口的内容向上滚动一页 *Scroll the active window one page up.* 
+
+*PgDn*
+
+激活窗口的内容向下滚动一页 *Scroll the active window one page down.* 
+
+*Up*
+
+激活窗口的内容向上滚动一行 *Scroll the active window one line up.* 
+
+*Down*
+
+激动窗口的内容向下滚动一行 *Scroll the active window one line down.* 
+
+*Left*
+
+激活窗口的内容向左移动一列 *Scroll the active window one column left.* 
+
+*Right*
+
+激活窗口的内容向右移动一列 *Scroll the active window one column right.* 
+
+*C-L*
+
+更新屏幕 *Refresh the screen.* 
