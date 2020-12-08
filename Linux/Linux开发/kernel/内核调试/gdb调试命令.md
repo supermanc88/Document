@@ -112,7 +112,7 @@ i r
 info r
 ```
 
-![image-20201208165151595](images/gdb调试命令/image-20201208165151595.png)
+![image-20201208165151595](https://raw.githubusercontent.com/supermanc88/ImageSources/master/image-20201208165151595.png)
 
 
 
@@ -144,11 +144,11 @@ p *array@length				// length是想要查看的长度
 
 如下sb为super_block结构指针，直接使用p打印会打印指针数值，并不会显示其中成员
 
-![image-20201208164116488](images/gdb调试命令/image-20201208164116488.png)
+![image-20201208164116488](https://raw.githubusercontent.com/supermanc88/ImageSources/master/image-20201208164116488.png)
 
 使用`p *sb`时，这样会显示详细的成员
 
-![image-20201208164337983](images/gdb调试命令/image-20201208164337983.png)
+![image-20201208164337983](https://raw.githubusercontent.com/supermanc88/ImageSources/master/image-20201208164337983.png)
 
 
 
@@ -156,7 +156,7 @@ p *array@length				// length是想要查看的长度
 
 下面的例子为打印rax寄存器内容，并强制转换成一个结构体指针打印
 
-![image-20201208165828157](images/gdb调试命令/image-20201208165828157.png)
+![image-20201208165828157](https://raw.githubusercontent.com/supermanc88/ImageSources/master/image-20201208165828157.png)
 
 ```shell
 p (type)arg
