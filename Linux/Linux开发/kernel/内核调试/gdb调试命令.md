@@ -62,7 +62,7 @@ info b
 
 ## 变量
 
-### 查看当前stack frame局部变量
+### 局部变量(当前stack frame)
 
 ```shell
 info locals
@@ -70,7 +70,7 @@ info locals
 
 
 
-### 查看当前stack frame参数
+### 函数参数(当前stack frame)
 
 ```shell
 info args
@@ -160,6 +160,16 @@ p *array@length				// length是想要查看的长度
 
 ```shell
 p (type)arg
+```
+
+
+
+
+
+## 进程
+
+```shell
+info proc pid
 ```
 
 
