@@ -87,3 +87,9 @@ thread_info 0xffff8800b91e4000
 
 
 
+
+
+相关链接：
+
+[内核栈溢出 | Linux Performance](http://linuxperf.com/?p=116)
+
