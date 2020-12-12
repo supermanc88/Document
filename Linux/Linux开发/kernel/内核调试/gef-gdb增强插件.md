@@ -93,3 +93,12 @@ gef config context.layout "-legend regs stack code args source memory -threads t
 
 
 ![image-20201211183754742](https://raw.githubusercontent.com/supermanc88/ImageSources/master/image-20201211183754742.png)
+
+
+
+经过一段时间的使用，发现 `regs`、`stack`、`memory`这几个也不怎么常用，所以最终的配置为：
+
+```shell
+gef config context.layout "-legend -regs -stack code args source -memory -threads trace -extra"
+```
+
