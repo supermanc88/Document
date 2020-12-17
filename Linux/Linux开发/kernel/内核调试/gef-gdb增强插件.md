@@ -102,3 +102,16 @@ gef config context.layout "-legend regs stack code args source memory -threads t
 gef config context.layout "-legend -regs -stack code args source -memory -threads trace -extra"
 ```
 
+
+
+有的时候`trace`这项也会很耗费时间，按需使用。
+
+
+
+
+
+## 显示效果
+
+结构体的显示也比只用gdb显示好多了
+
+![image-20201217114218500](https://raw.githubusercontent.com/supermanc88/ImageSources/master/image-20201217114218500.png)
