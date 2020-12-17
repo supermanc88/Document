@@ -19,4 +19,8 @@ git stash save "修改信息"
 这样之后，代码就回到上一个commit了。
 
 
+## 解决 git pull/push 每次都要输入用户名密码的问题
 
+```shell
+git config --global credential.helper store
+```
