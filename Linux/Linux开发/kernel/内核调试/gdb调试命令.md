@@ -330,8 +330,6 @@ Ctrl + X + O
 // 查看正在操作的文件名
 p file->f_path.dentry->d_iname
 
-p infosec_dentry->d_iname
-
 p dentry->d_iname
 
 // 通过page获取inode信息
@@ -339,8 +337,6 @@ p *page->mapping->host
 
 // 查看文件大小
 p inode->i_size
-
-p new_infosecfs_inode->i_size
 
 p dentry->d_inode->i_size
 
