@@ -24,3 +24,11 @@ git stash save "修改信息"
 ```shell
 git config --global credential.helper store
 ```
+
+## 自动添加修改的文件并提交
+
+把暂存区的所有被修改或者已删除的且已经被git管理的文档提交提交到分支，须输入描述信息（可省略 git add 过程）
+
+```shell
+git commit -a -m "comment"
+```
