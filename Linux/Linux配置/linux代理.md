@@ -16,7 +16,7 @@ export no_proxy="localhost, 127.0.0.1, ::1"
 
 
 
-reboot
+reboot或 `source /etc/profile.d/proxy.sh`生效
 
 
 

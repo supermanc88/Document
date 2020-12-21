@@ -32,3 +32,20 @@ git config --global credential.helper store
 ```shell
 git commit -a -m "comment"
 ```
+
+
+
+
+
+## 撤销git add
+
+add某个文件后，又反悔不想添加的时候
+
+```shell
+git reset --mixed				// 这样文件退出暂存区，但是修改保留(这个应该是最好用的方式)
+
+git reset HEAD <file>			// file文件取消暂存
+```
+
+
+
