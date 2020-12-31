@@ -24,3 +24,11 @@ tar -jxvf xx.tar.bz2
 unzip xx.zip
 ```
 
+
+
+## cpio
+
+```shell
+cpio -idv < 文件名.cpio
+```
+
