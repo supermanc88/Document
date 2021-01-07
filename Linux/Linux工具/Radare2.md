@@ -22,11 +22,11 @@ man rabin2
 
 
 
-![image-20201230155609153](images/Radare2/image-20201230155609153.png)
+![image-20201230155609153](https://raw.githubusercontent.com/supermanc88/ImageSources/master/image-20201230155609153.png)
 
 
 
-![image-20201230155713077](images/Radare2/image-20201230155713077.png)
+![image-20201230155713077](https://raw.githubusercontent.com/supermanc88/ImageSources/master/image-20201230155713077.png)
 
 
 
@@ -38,4 +38,4 @@ rabin2 -S bin
 
 
 
-![image-20201230160101733](images/Radare2/image-20201230160101733.png)
+![image-20201230160101733](https://raw.githubusercontent.com/supermanc88/ImageSources/master/image-20201230160101733.png)
