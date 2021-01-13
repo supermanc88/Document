@@ -21,3 +21,19 @@ yum info installed
 yum list <packagename>
 ```
 
+
+
+## 查找软件包
+
+```shell
+yum search <packagename>
+```
+
+
+
+## 删除软件包命令
+
+```shell
+yum remove <packagename>
+```
+
