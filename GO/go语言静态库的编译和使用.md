@@ -113,3 +113,82 @@ call demo ...
 main.go:3: can't find import: "demo"
 ```
 
+------
+
+
+
+
+
+# 发布方案
+
+将要发布的闭源包.a文件放到 $GOROOT/pkg/$GOOS_$GOARCH/ 目录中.
+
+再将发布包的源码保留只有包声明的源文件放到 $GOROOT/src/pkg/ 目录中.
+
+操作如下：
+
+发布方：
+
+例如有say包要发布：
+
+```
+$cd $GOPATH/src/say
+$cat say.go
+// say something package
+package say
+
+import "fmt"
+
+// private function
+func say(str string){
+    fmt.Println(str)
+}
+
+// Say hi
+func Hi(){
+    say("Hi......")
+}
+
+// Say hello to someone
+func Hello(me string){
+    say("Hello" + me)
+}
+```
+
+首先编译生成say包的.a文件(如果要发布到多种系统架构,需要修改编译参数交叉编译出多种发布文件)
+
+```
+$go install
+$ls $GOPATH/pkg/$GOOS_$GOARCH/say.a
+```
+
+其次修改发布包对应的源文件(两种方式任选)
+
+最简单的修改方式
+
+```
+$echo 'package say' > say.go
+```
+
+保留导出的接口与API注释供查看使用
+
+```
+$cat > say.go <<EOF
+// say something package
+package say
+
+// Say hi
+func Hi(){}
+
+// Say hello to someone
+func Hello(me string){}
+EOF
+```
+
+最后发布方提供两份文件:
+
+编译生成say包的.a文件和修改之后的源文件
+
+**say.a**
+
+**say.go**
