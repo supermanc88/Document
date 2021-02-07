@@ -127,7 +127,7 @@ main.go:3: can't find import: "demo"
 
 操作如下：
 
-发布方：
+## 发布方：
 
 例如有say包要发布：
 
@@ -192,3 +192,40 @@ EOF
 **say.a**
 
 **say.go**
+
+
+
+## 使用方：
+
+复制say.a文件到$GOROOT/pkg/$GOOS_$GOARCH/目录中
+
+复制say.go文件到$GOROOT/src/pkg/say/目录中
+
+```
+$cp say.a $GOROOT/pkg/$GOOS_$GOARCH/
+$mkdir -p $GOROOT/src/pkg/say/
+$cp say.go $GOROOT/src/pkg/say/
+```
+
+然后就可以在自己的代码中像使用官方标准库一样使用第三方闭源包了.
+
+如果三方包保留了接口与API注释, 还可以直接使用godoc命令查看
+
+```
+$godoc say
+PACKAGE DOCUMENTATION
+
+package say
+    import "say"
+
+    say something package
+
+FUNCTIONS
+
+func Hi()
+    Say hi
+
+func Hello(me string)
+    Say hello to someone
+```
+
