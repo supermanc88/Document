@@ -25,5 +25,15 @@ xdebug.remote_autostart= 1
 ## 设置VSCode调试环境
 
 ```
-"php.executablePath": "/usr/bin/php"
+"php.executablePath": "/usr/bin/php" 
+```
+
+
+
+## PHPStudy设置
+
+```shell
+;xdebug.remote_enable=Off
+xdebug.remote_enable=1
+xdebug.remote_autostart=1 
 ```
