@@ -209,9 +209,11 @@ $cp say.go $GOROOT/src/pkg/say/
 
 然后就可以在自己的代码中像使用官方标准库一样使用第三方闭源包了.
 
+<font color='red'>注：这个第三方的路径要和编译时的包路径一致</font>
+
 如果三方包保留了接口与API注释, 还可以直接使用godoc命令查看
 
-```
+```go
 $godoc say
 PACKAGE DOCUMENTATION
 
