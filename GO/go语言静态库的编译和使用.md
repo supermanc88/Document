@@ -231,3 +231,22 @@ func Hello(me string)
     Say hello to someone
 ```
 
+
+
+## Makefile 示例
+
+```makefile
+# 在这里添加所有的gofile
+gofiles = main.go file2.go
+
+# 这里是生成的二进制文件名
+target_name = "main"
+
+# 这里是pkg/platform路径
+pkg_path = "/root/go/pkg/linux_amd64"
+
+target :
+	go tool compile -o temp.o -I ${pkg_path} ${gofiles}
+	go tool link -o ${target_name} -L ${pkg_path} temp.o	
+```
+
