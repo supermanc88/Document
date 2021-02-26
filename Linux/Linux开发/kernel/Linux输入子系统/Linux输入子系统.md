@@ -360,3 +360,4 @@ static int input_attach_handler(struct input_dev *dev, struct input_handler *han
 ```
 
 对于connect函数，每种事件处理器的实现都有差异，但原理都相同。他主要注册input_handle结构，然后将input_device和input_handler进行关联。
+
