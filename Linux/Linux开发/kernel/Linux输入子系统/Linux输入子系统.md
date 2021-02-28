@@ -361,3 +361,185 @@ static int input_attach_handler(struct input_dev *dev, struct input_handler *han
 
 对于connect函数，每种事件处理器的实现都有差异，但原理都相同。他主要注册input_handle结构，然后将input_device和input_handler进行关联。
 
+以evdev的connect的evdev_connect函数，代码注释分析下这个过程：
+
+```c
+static int evdev_connect(struct input_handler *handler, struct input_dev *dev,
+             const struct input_device_id *id)
+{
+    struct evdev *evdev;
+    int minor;
+    int dev_no;
+    int error;
+    
+    /*申请一个新的次设备号*/
+    minor = input_get_new_minor(EVDEV_MINOR_BASE, EVDEV_MINORS, true);
+
+    /* 这说明内核已经没办法再分配这种类型的设备了 */ 
+    if (minor < 0) {
+        error = minor;
+        pr_err("failed to reserve new minor: %d\n", error);
+        return error;
+    }
+
+    /* 开始给evdev事件层驱动分配空间了 */  
+    evdev = kzalloc(sizeof(struct evdev), GFP_KERNEL);
+    if (!evdev) {
+        error = -ENOMEM;
+        goto err_free_minor;
+    }
+
+        /* 初始化client_list列表和evdev_wait队列 */  
+    INIT_LIST_HEAD(&evdev->client_list);
+    spin_lock_init(&evdev->client_lock);
+    mutex_init(&evdev->mutex);
+    init_waitqueue_head(&evdev->wait);
+    evdev->exist = true;
+
+    dev_no = minor;
+    /* Normalize device number if it falls into legacy range */
+    if (dev_no < EVDEV_MINOR_BASE + EVDEV_MINORS)
+        dev_no -= EVDEV_MINOR_BASE;
+    
+    /*设置设备节点名称，/dev/eventX 就是在此时设置*/
+    dev_set_name(&evdev->dev, "event%d", dev_no);
+
+    /* 初始化evdev结构体，其中handle为输入设备和事件处理的关联接口 */  
+    evdev->handle.dev = input_get_device(dev);
+    evdev->handle.name = dev_name(&evdev->dev);
+    evdev->handle.handler = handler;
+    evdev->handle.private = evdev;
+
+      /*设置设备号，应用层就是通过设备号，找到该设备的*/
+    evdev->dev.devt = MKDEV(INPUT_MAJOR, minor);
+    evdev->dev.class = &input_class;
+    evdev->dev.parent = &dev->dev;
+    evdev->dev.release = evdev_free;
+    device_initialize(&evdev->dev);
+
+     /* input_dev设备驱动和handler事件处理层的关联，就在这时由handle完成 */ 
+    error = input_register_handle(&evdev->handle);
+    if (error)
+        goto err_free_evdev;
+
+    cdev_init(&evdev->cdev, &evdev_fops);
+    evdev->cdev.kobj.parent = &evdev->dev.kobj;
+    error = cdev_add(&evdev->cdev, evdev->dev.devt, 1);
+    if (error)
+        goto err_unregister_handle;
+
+    /*将设备加入到Linux设备模型，它的内部将找到它的bus，然后让它的bus
+    给它找到它的driver，在驱动或者总线的probe函数中，一般会在/dev/目录
+    先创建相应的设备节点，这样应用程序就可以通过该设备节点来使用设备了
+    ，/dev/eventX 设备节点就是在此时生成
+    */
+    error = device_add(&evdev->dev);
+    if (error)
+        goto err_cleanup_evdev;
+
+    return 0;
+
+ err_cleanup_evdev:
+    evdev_cleanup(evdev);
+ err_unregister_handle:
+    input_unregister_handle(&evdev->handle);
+ err_free_evdev:
+    put_device(&evdev->dev);
+ err_free_minor:
+    input_free_minor(minor);
+    return error;
+}
+```
+
+到这里，输入子系统的分析就结束了；如果还不是很了解，那么我们换个角度，应用层的调用如何作用到具体的实际硬件来分析，你就会清晰了。
+
+## 从应用层的角度出发看input子系统
+
+首先思考个问题，在应用层调用read函数，是如何读取到实际硬件的按键值的？
+由上面分析可知，当调用open函数读取键值时，将调用到`evdev_read`：
+
+```c
+static ssize_t evdev_read(struct file *file, char __user *buffer,
+              size_t count, loff_t *ppos)
+{
+    struct evdev_client *client = file->private_data;
+    struct evdev *evdev = client->evdev;
+    struct input_event event;
+    size_t read = 0;
+    int error;
+
+    if (count != 0 && count < input_event_size())
+        return -EINVAL;
+
+    for (;;) {
+        if (!evdev->exist || client->revoked)
+            return -ENODEV;
+
+        /*如果client的环形缓冲区中没有数据并且是非阻塞的，那么返回-EAGAIN，也就是try again*/
+        if (client->packet_head == client->tail &&
+            (file->f_flags & O_NONBLOCK))
+            return -EAGAIN;
+
+        /*
+         * count == 0 is special - no IO is done but we check
+         * for error conditions (see above).
+         */
+        if (count == 0)
+            break;
+
+            /*调用evdev_fetch_next_event，如果获得了数据则取出来*/ 
+        while (read + input_event_size() <= count &&
+               evdev_fetch_next_event(client, &event)) {
+
+            /*input_event_to_user调用copy_to_user传入用户程序中，这样读取完成*/  
+            if (input_event_to_user(buffer + read, &event))
+                return -EFAULT;
+
+            read += input_event_size();
+        }
+
+        if (read)
+            break;
+
+        /*如果没有数据，并且是阻塞的，则在等待队列上等待*/  
+        if (!(file->f_flags & O_NONBLOCK)) {
+            error = wait_event_interruptible(evdev->wait,
+                    client->packet_head != client->tail ||
+                    !evdev->exist || client->revoked);
+            if (error)
+                return error;
+        }
+    }
+
+    return read;
+}
+```
+
+如果read函数进入了休眠状态，又是谁来唤醒？搞明白了这个问题，也就知道了read的数据是从哪来的了。
+搜索这个evdev->wait这个等待队列变量,找到evdev_event函数里唤醒:
+
+```c
+static void evdev_event(struct input_handle *handle,
+            unsigned int type, unsigned int code, int value)
+{
+    struct input_value vals[] = { { type, code, value } };
+
+    evdev_events(handle, vals, 1);
+         ---> evdev_pass_values(client, vals, count, ev_time);
+                 ---> wake_up_interruptible(&evdev->wait);
+}
+```
+
+其中evdev_event()是evdev.c(事件处理层) 的`evdev_handler->event`成员,如下图所示:
+
+![img](images/Linux输入子系统/14336242-dd6d91de64337029.png)
+
+猜测下,是谁调用evdev_event()这个`evdev_handler->event`事件驱动函数，
+ 应该就是之前分析的input_dev设备层调用的。
+ input.c中试搜下`handler->event` 或 `handler.event`,回溯下函数调用：
+ handler->event(handle, v->type, v->code, v->value)
+    ---> input_to_handler
+     ---> input_pass_values
+       ---> input_handle_event
+         ---> *input_event*
+ 显然，就是input_dev通过输入核心为驱动层提供统一的接口，`input_event`，来向事件处理层上报数据并唤醒。
