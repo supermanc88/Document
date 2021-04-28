@@ -73,6 +73,10 @@ Plug 'tomasiser/vim-code-dark'
 " https://github.com/dunstontc/vim-vscode-theme
 Plug 'dunstontc/vim-vscode-theme'
 
+" luochen1990/rainbow 彩虹括号插件
+" https://github.com/luochen1990/rainbow
+Plug 'luochen1990/rainbow'
+
 " Yggdroot/LeaderF 模糊搜索插件
 " https://github.com/Yggdroot/LeaderF
 Plug 'Yggdroot/LeaderF', { 'do': ':LeaderfInstallCExtension' }
@@ -90,6 +94,9 @@ Plug 'preservim/nerdtree'                    							" 目录树
 Plug 'vim-airline/vim-airline'                							" 状态栏
 Plug 'vim-airline/vim-airline-themes'												" 状态栏主题
 
+" tpope/vim-fugitive git插件
+" https://github.com/tpope/vim-fugitive
+Plug 'tpope/vim-fugitive'
 
 " "Plug 'majutsushi/tagbar',{'on':'TagbarToggle'}						    " 标签插件 非C类禁用 tagbar 不然打开文件卡顿
 " Plug 'godlygeek/tabular'												" -------------------
@@ -152,6 +159,11 @@ let g:airline_theme='powerlineish'
 " nanotech/jellybeans.vim 主题插件 配置
 " set guifont=Monaco:h10 noanti
 " let g:jellybeans_use_gui_italics = 0									" 支持斜体
+
+
+" luochen1990/rainbow 彩虹括号插件 配置
+" 自动启用
+let g:rainbow_active = 1
 
 
 " scrooloose/nerdcommenter 注释插件 配置
