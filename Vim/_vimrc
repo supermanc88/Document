@@ -75,6 +75,10 @@ Plug 'tomasiser/vim-code-dark'
 " https://github.com/dunstontc/vim-vscode-theme
 Plug 'dunstontc/vim-vscode-theme'
 
+" altercation/vim-colors-solarized 主题插件
+" https://github.com/altercation/vim-colors-solarized
+Plug 'altercation/vim-colors-solarized'
+
 " luochen1990/rainbow 彩虹括号插件
 " https://github.com/luochen1990/rainbow
 Plug 'luochen1990/rainbow'
@@ -101,9 +105,18 @@ Plug 'vim-airline/vim-airline-themes'												" 状态栏主题
 Plug 'tpope/vim-fugitive'
 
 " Plug 'plasticboy/vim-markdown'											" Vim markdown语法插件
-" Plug 'flazz/vim-colorschemes'               							" 代码高亮, 主题
+
+" flazz/vim-colorschemes 主题插件
+" https://github.com/flazz/vim-colorschemes
+Plug 'flazz/vim-colorschemes'
+
 " Plug 'hzchirs/vim-material'												" material主题
 " Plug 'ludovicchabant/vim-gutentags'										" gtags辅助
+
+" dense-analysis/ale 动态检查工具
+" https://github.com/dense-analysis/ale
+Plug 'dense-analysis/ale'
+
 call plug#end()
 
 " 添加 http://github.com/tpope/vim-unimpaired 插件 用来补充一些映射
@@ -133,6 +146,7 @@ let mapleader = "\<space>"
 " colorscheme wombat
 " colorscheme jellybeans													" 来自nanotech/jellybeans.vim
 " colorscheme lucius														" 来自jonathanfilip/vim-lucius
+colorscheme molokai																" 来自flazz/vim-colorschemes 主题插件
 
 let g:airline_theme='powerlineish'
 
@@ -156,9 +170,39 @@ let g:airline_theme='powerlineish'
 " let g:jellybeans_use_gui_italics = 0									" 支持斜体
 
 
+" altercation/vim-colors-solarized 主题插件 配置
+" 蓝色的，没想象中的好看
+" set background=dark
+" colorscheme solarized
+
+
 " luochen1990/rainbow 彩虹括号插件 配置
 " 自动启用
 let g:rainbow_active = 1
+
+
+" dense-analysis/ale 动态检查工具 配置
+" 抄自 https://skywind3000.com/blog/archives/2084/
+let g:ale_linters_explicit = 1
+let g:ale_completion_delay = 500
+let g:ale_echo_delay = 20
+let g:ale_lint_delay = 500
+let g:ale_echo_msg_format = '[%linter%] %code: %%s'
+let g:ale_lint_on_text_changed = 'normal'
+let g:ale_lint_on_insert_leave = 1
+let g:airline#extensions#ale#enabled = 1
+let g:ale_c_gcc_options = '-Wall -O2 -std=c99'
+let g:ale_cpp_gcc_options = '-Wall -O2 -std=c++14'
+let g:ale_c_cppcheck_options = ''
+let g:ale_cpp_cppcheck_options = ''
+
+let g:ale_sign_error = "\ue009\ue009"
+hi! clear SpellBad
+hi! clear SpellCap
+hi! clear SpellRare
+hi! SpellBad gui=undercurl guisp=red
+hi! SpellCap gui=undercurl guisp=blue
+hi! SpellRare gui=undercurl guisp=magenta
 
 
 " scrooloose/nerdcommenter 注释插件 配置
