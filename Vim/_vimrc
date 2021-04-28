@@ -30,6 +30,8 @@ set guioptions-=m
 set guioptions-=T
 " 删除scrollbar
 set guioptions-=r
+" 删除左边scrollbar
+:set guioptions-=L
 
 " 十字定位线
 set cursorline  
@@ -98,16 +100,9 @@ Plug 'vim-airline/vim-airline-themes'												" 状态栏主题
 " https://github.com/tpope/vim-fugitive
 Plug 'tpope/vim-fugitive'
 
-" "Plug 'majutsushi/tagbar',{'on':'TagbarToggle'}						    " 标签插件 非C类禁用 tagbar 不然打开文件卡顿
-" Plug 'godlygeek/tabular'												" -------------------
 " Plug 'plasticboy/vim-markdown'											" Vim markdown语法插件
 " Plug 'flazz/vim-colorschemes'               							" 代码高亮, 主题
 " Plug 'hzchirs/vim-material'												" material主题
-" Plug 'stephpy/vim-php-cs-fixer'											" php格式化
-" Plug 'Yggdroot/LeaderF', { 'do': '.\install.bat' }						" 搜索插件
-" Plug 'vim-scripts/gtags.vim'											" gtags
-" Plug 'vim-scripts/cscope.vim'											" cscope
-" Plug 'whatot/gtags-cscope.vim'											
 " Plug 'ludovicchabant/vim-gutentags'										" gtags辅助
 call plug#end()
 
