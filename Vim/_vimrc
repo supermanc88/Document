@@ -40,6 +40,11 @@ set cursorcolumn
 highlight CursorLine cterm=none ctermbg=236  
 highlight CursorColumn cterm=none ctermbg=236
 
+if has("win32")
+	source $VIMRUNTIME/delmenu.vim
+	source $VIMRUNTIME/menu.vim
+endif		
+
 " source $VIMRUNTIME/vimrc_example.vim
 
 " vim-plug: Vim plugin manager
@@ -182,27 +187,67 @@ let g:rainbow_active = 1
 
 
 " dense-analysis/ale 动态检查工具 配置
+" 具体配置请参考： https://github.com/dense-analysis/ale/tree/master/doc
 " 抄自 https://skywind3000.com/blog/archives/2084/
-let g:ale_linters_explicit = 1
+
+"使用clang对c和c++进行语法检查，对python使用pylint进行语法检查
+" 设置对应语言的linter的时候，请确认安装了
+" c和c++环境下面是用的clang，需要安装clang或gcc
+let g:ale_linters = {
+\   'c++': ['clang'],
+\   'c': ['clang'],
+\   'python': ['pylint'],
+\}
+
+" 不希望ale运行除我明确要求的内容以外的其他内容
+" 感觉好像没有生效，但目前不影响其他插件，先这么放着吧
+" let g:ale_linters_explicit = 1
+"始终开启标志列
+let g:ale_sign_column_always = 1
+let g:ale_set_highlights = 1
+"自定义error和warning图标
+let g:ale_sign_error = '✗'
+let g:ale_sign_warning = '⚡'
+"在vim自带的状态栏中整合ale
+let g:ale_statusline_format = ['✗ %d', '⚡ %d', '✔ OK']
+"显示Linter名称,出错或警告等相关信息
+let g:ale_echo_msg_error_str = 'E'
+let g:ale_echo_msg_warning_str = 'W'
+
+
+" let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
+
 let g:ale_completion_delay = 500
 let g:ale_echo_delay = 20
 let g:ale_lint_delay = 500
+" 报错信息格式
 let g:ale_echo_msg_format = '[%linter%] %code: %%s'
+" 以下两句规定了如果在normal模式下文件改变及以及离开insert模式才运行linter
+" 这是相对保守的做法，如果没有的话，会导致YCM的补全框频繁的刷新
 let g:ale_lint_on_text_changed = 'normal'
 let g:ale_lint_on_insert_leave = 1
-let g:airline#extensions#ale#enabled = 1
-let g:ale_c_gcc_options = '-Wall -O2 -std=c99'
-let g:ale_cpp_gcc_options = '-Wall -O2 -std=c++14'
-let g:ale_c_cppcheck_options = ''
-let g:ale_cpp_cppcheck_options = ''
 
-let g:ale_sign_error = "\ue009\ue009"
+" 我把YCM的错误检测提示标志关了，不然这两个哪个在后面哪个生效
+" let g:airline#extensions#ale#enabled = 1
+" 这里就是传给编译器的参数
+" 这里需要根据每个项目的不同去修改它的引用头文件及宏定义
+
+" CentOS6.10内核编译参数
+let g:ale_c_cc_options = '-I. -IS:\\usr\\src\\kernels\\2.6.32-754.el6.x86_64\\include -IS:\\usr\\src\\kernels\\2.6.32-754.el6.x86_64\\arch\\x86\\include -DMODULE -D__KERNEL__ -D__GNUC__=4 -DCONFIG_64BIT'
+" let g:ale_cpp_cc_options = '-Wall -std=c++11'
+" check用人家默认的就可以了 '--enable=style' 不知道是什么
+" let g:ale_c_cppcheck_options = ''
+" let g:ale_cpp_cppcheck_options = ''
+
 hi! clear SpellBad
 hi! clear SpellCap
 hi! clear SpellRare
 hi! SpellBad gui=undercurl guisp=red
 hi! SpellCap gui=undercurl guisp=blue
 hi! SpellRare gui=undercurl guisp=magenta
+
+" 查看报错信息
+noremap <Leader>d :ALEDetail<CR>
 
 
 " scrooloose/nerdcommenter 注释插件 配置
@@ -270,11 +315,15 @@ autocmd VimEnter * NERDTree | wincmd p
 "下载YCM插件源码后，如下命令编译插件：
 "python install.py --clang-completer --msvc 16
 
-let g:ycm_global_ycm_extra_conf = '$VIMRUNTIME/../.ycm_extra_conf.py' 				"此处是全局配置文件路径
-let g:ycm_confirm_extra_conf = 0 													"关闭每次导入配置文件前的询问
+"此处是全局配置文件路径
+let g:ycm_global_ycm_extra_conf = '$VIMRUNTIME/../.ycm_extra_conf.py'
+"关闭每次导入配置文件前的询问
+let g:ycm_confirm_extra_conf = 0
 " "let g:syntastic_always_populate_loc_list = 1 										"方便使用syntastic进行语法检查
-let g:ycm_seed_identifiers_with_syntax=1 											"开启语法关键字补全
-let g:ycm_add_preview_to_completeopt=0												"关闭补全预览
+"开启语法关键字补全
+let g:ycm_seed_identifiers_with_syntax=1
+"关闭补全预览
+let g:ycm_add_preview_to_completeopt=0
 let g:ycm_seed_identifiers_with_syntax = 1											"标识符种子
 let g:ycm_min_num_of_chars_for_completion = 1										"当按一个字符之后开始提示
 let g:ycm_semantic_triggers =  {
@@ -285,11 +334,16 @@ let g:ycm_semantic_triggers =  {
 set completeopt-=preview
 "修改提示框颜色
 highlight PMenu ctermfg=0 ctermbg=242 guifg=black guibg=darkgrey
-highlight PMenuSel ctermfg=242 ctermbg=8 guifg=darkgrey guibg=black				
+highlight PMenuSel ctermfg=242 ctermbg=8 guifg=darkgrey guibg=black		
+" 为了使用ale语法检查，要把ycm的语法检查关闭
+"disable ycm 语法检查
+" 这里关闭之后，下面的错误提示也就没用了"
+let g:ycm_enable_diagnostic_signs = 0
+let g:ycm_enable_diagnostic_highlighting = 0		
 " 错误标记
 let g:ycm_error_symbol = '✗'  "set error or warning signs
 " warning标记
-let g:ycm_warning_symbol = '⚠'
+let g:ycm_warning_symbol = '⚡'	"⚠
 
 
 
@@ -392,6 +446,7 @@ noremap <leader>fl :<C-U><C-R>=printf("Leaderf line %s", "")<CR><CR>
 noremap <C-B> :<C-U><C-R>=printf("Leaderf! rg --current-buffer -e %s ", expand("<cword>"))<CR>
 
 " 使用rg进行查找
+" expand("<cword>") 是取当前光标下的单词
 noremap <C-F> :<C-U><C-R>=printf("Leaderf! rg -e %s ", expand("<cword>"))<CR>
 " search visually selected text literally
 xnoremap gf :<C-U><C-R>=printf("Leaderf! rg -F -e %s ", leaderf#Rg#visual())<CR>
@@ -438,9 +493,9 @@ noremap <F2> :LeaderfFunction!<cr>
 " 在上面显示buffer/tab相关状态栏 smart tab line 开启
 let g:airline#extensions#tabline#enabled = 1
 
-
 " 默认显示的是垂直分隔的
 " 这里是否生效还要通过下面的安装字体才可以
+" 要使用箭头样式需要打开powerline
 " 一般使用Source Code Pro
 let g:airline_powerline_fonts = 1
 
@@ -469,15 +524,6 @@ let g:airline_powerline_fonts = 1
 " let g:airline_symbols.notexists = 'Ɇ'
 " let g:airline_symbols.whitespace = 'Ξ'
 
-
-" 
-" 
-" " airline theme 配置===================================================
-" " let g:airline_theme='bubblegum'							" airline 主题
-" let g:airline#extensions#tabline#enabled = 1			" smart tab line 开启
-" " let g:airline_theme='material'
-" " airline theme 配置===================================================
-" 
 
 
 
