@@ -233,7 +233,9 @@ let g:ale_lint_on_insert_leave = 1
 " 这里需要根据每个项目的不同去修改它的引用头文件及宏定义
 
 " CentOS6.10内核编译参数
+" 暂时不知道怎么换行
 let g:ale_c_cc_options = '-I. -IS:\\usr\\src\\kernels\\2.6.32-754.el6.x86_64\\include -IS:\\usr\\src\\kernels\\2.6.32-754.el6.x86_64\\arch\\x86\\include -DMODULE -D__KERNEL__ -D__GNUC__=4 -DCONFIG_64BIT'
+
 " let g:ale_cpp_cc_options = '-Wall -std=c++11'
 " check用人家默认的就可以了 '--enable=style' 不知道是什么
 " let g:ale_c_cppcheck_options = ''
@@ -355,9 +357,9 @@ let g:ycm_warning_symbol = '⚡'	"⚠
 " "highlight YcmWarningLine
 " 
 " " 跳转快捷键
-" nnoremap <c-k> :YcmCompleter GoToDeclaration<CR>|
-" nnoremap <c-h> :YcmCompleter GoToDefinition<CR>| 
-" nnoremap <c-j> :YcmCompleter GoToDefinitionElseDeclaration<CR>|
+nnoremap <c-k> :YcmCompleter GoToDeclaration<CR>|
+nnoremap <c-h> :YcmCompleter GoToDefinition<CR>| 
+nnoremap <c-j> :YcmCompleter GoToDefinitionElseDeclaration<CR>|
 " " YouCompleteMe 配置===================================================
 " 
 " source $VIMRUNTIME/cscope_maps.vim
