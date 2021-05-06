@@ -234,7 +234,7 @@ let g:ale_lint_on_insert_leave = 1
 
 " CentOS6.10内核编译参数
 " 暂时不知道怎么换行
-let g:ale_c_cc_options = '-I. -IS:\\usr\\src\\kernels\\2.6.32-754.el6.x86_64\\include -IS:\\usr\\src\\kernels\\2.6.32-754.el6.x86_64\\arch\\x86\\include -DMODULE -D__KERNEL__ -D__GNUC__=4 -DCONFIG_64BIT'
+let g:ale_c_cc_options = ''
 
 " let g:ale_cpp_cc_options = '-Wall -std=c++11'
 " check用人家默认的就可以了 '--enable=style' 不知道是什么
@@ -250,6 +250,71 @@ hi! SpellRare gui=undercurl guisp=magenta
 
 " 查看报错信息
 noremap <Leader>d :ALEDetail<CR>
+
+
+" 创建一个函数用来选择cc_options
+function! SelectCcOptions()
+
+let g:CcOptionsCollection = [
+\ {'2.6.32-754' : '-I.
+\ -IS:\\usr\\src\\kernels\\2.6.32-754.el6.x86_64\\include 
+\ -IS:\\usr\\src\\kernels\\2.6.32-754.el6.x86_64\\arch\\x86\\include 
+\ -DMODULE -D__KERNEL__ -D__GNUC__=4 -DCONFIG_64BIT',},
+\ {'UOSV21-5.4.50' : '-I.
+\ Q:\\usr\\src\\linux-headers-5.4.50-amd64-desktop\\include
+\ Q:\\usr\\src\\linux-headers-5.4.50-amd64-desktop\\arch\\x86\\include
+\ -DMODULE -D__KERNEL__ -D__GNUC__=8 -DCONFIG_64BIT'},
+\ ]
+
+	" echo len(g:CcOptionsCollection)
+
+	let i = 0
+	let selectList = []
+	while i < len(g:CcOptionsCollection)
+		" echo i
+		let tempDict = get(g:CcOptionsCollection, i, "")
+		echo string(i) . ":" . string(keys(tempDict))
+		let i += 1
+		call add(selectList, string(keys(tempDict)))
+	endwhile
+	
+	echo "Input Your Select:"
+	
+	" let userSelect = inputlist(selectList)
+	" echo userSelect
+	
+	let userInput = getchar()
+	echo nr2char(userInput)
+	
+	let tempDict = get(g:CcOptionsCollection, nr2char(userInput), {"NONE" : ""})
+	
+	if keys(tempDict)[0] == "NONE"
+		let g:CurrentCcOptions = ''
+	else
+		let g:CurrentCcOptions = values(tempDict)[0]
+	endif
+	
+	echo g:CurrentCcOptions
+	
+	" echo g:CcOptionsCollection
+	
+	let g:ale_c_cc_options = g:CurrentCcOptions
+	
+	" 重新载入打开的文件
+	bufdo e
+
+endfunction
+
+function! GetCcOptions()
+	echo g:ale_c_cc_options
+endfunction
+
+" ale select sdk
+noremap <leader>ss : call SelectCcOptions()<CR>
+
+" ale show current sdk
+noremap <leader>gs : call GetCcOptions()<CR>
+
 
 
 " scrooloose/nerdcommenter 注释插件 配置
