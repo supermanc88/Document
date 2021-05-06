@@ -190,9 +190,11 @@ let g:rainbow_active = 1
 " 具体配置请参考： https://github.com/dense-analysis/ale/tree/master/doc
 " 抄自 https://skywind3000.com/blog/archives/2084/
 
-"使用clang对c和c++进行语法检查，对python使用pylint进行语法检查
+" 使用clang对c和c++进行语法检查，对python使用pylint进行语法检查
 " 设置对应语言的linter的时候，请确认安装了
-" c和c++环境下面是用的clang，需要安装clang或gcc
+" c和c++环境下面是用的clang，需要安装clang或gcc，配置到环境变量
+" 在安装YCM后，clangd也被安装，如果配置到环境变量后，clangd的lsp
+" 也会被启用。
 let g:ale_linters = {
 \   'c++': ['clang'],
 \   'c': ['clang'],
