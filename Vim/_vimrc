@@ -1,5 +1,7 @@
 " windows上的配置
-" 基本配置=============================================================
+
+" [ 基本配置=============================================================
+
 set nocompatible              " be iMproved, required
 " filetype off                  " required
 filetype plugin on						"	preservim/nerdcommenter 需要开启
@@ -22,7 +24,7 @@ set noundofile				  "表示不创建撤销文件
 set foldmethod=manual
 "打开文件是默认不折叠代码
 set foldlevelstart=99
-" 基本配置=============================================================
+
 
 " 删除menu bar
 set guioptions-=m
@@ -45,7 +47,12 @@ if has("win32")
 	source $VIMRUNTIME/menu.vim
 endif		
 
-" source $VIMRUNTIME/vimrc_example.vim
+
+" 启动最大化
+autocmd GUIEnter * simalt ~x
+
+" 基本配置============================================================= ]
+
 
 " vim-plug: Vim plugin manager
 " 下载 https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim 文件到vim的autoload目录
@@ -134,20 +141,22 @@ call plug#end()
 " 前缀键默认为“\”。现修改为空格
 let mapleader = "\<space>"
 
+" [ cormacrelf/vim-colors-github 主题插件 配置=============================================================
 
 " cormacrelf/vim-colors-github 主题插件 配置
 " Place before the colorscheme github
 " use a slightly darker background, like GitHub inline code blocks
 " let g:github_colors_soft = 1
-
 " use the dark theme / light
 " set background=dark
-
 " more blocky diff markers in signcolumn (e.g. GitGutter)
 " let g:github_colors_block_diffmark = 0
 
-" 主题及airline配置
-" scheme 配置=========================================================
+" cormacrelf/vim-colors-github 主题插件 配置============================================================= ]
+
+
+" [ 主题及airline配置=============================================================
+
 " colorscheme molokai
 " colorscheme desert
 " set background=light
@@ -167,7 +176,8 @@ let g:airline_theme='powerlineish'
 
 " colorscheme dark_plus															" 来自dunstontc/vim-vscode-theme
 " let g:airline_theme = 'dark_plus'									" 来自dunstontc/vim-vscode-theme
-" scheme 配置=========================================================
+
+" 主题及airline配置============================================================= ]
 
 
 " jonathanfilip/vim-lucius 主题插件 配置
@@ -189,6 +199,8 @@ let g:airline_theme='powerlineish'
 " 自动启用
 let g:rainbow_active = 1
 
+
+" [ dense-analysis/ale 动态检查工具 配置=============================================================
 
 " dense-analysis/ale 动态检查工具 配置
 " 具体配置请参考： https://github.com/dense-analysis/ale/tree/master/doc
@@ -327,7 +339,11 @@ noremap <leader>ss : call SelectCcOptions()<CR>
 " ale show current sdk
 noremap <leader>gs : call GetCcOptions()<CR>
 
+" dense-analysis/ale 动态检查工具 配置============================================================= ]
 
+
+
+" [ scrooloose/nerdcommenter 注释插件 配置=============================================================
 
 " scrooloose/nerdcommenter 注释插件 配置
 " [count]<leader>cc |NERDCommenterComment|
@@ -378,10 +394,12 @@ let g:NERDTrimTrailingWhitespace = 1
 " Enable NERDCommenterToggle to check all selected lines is commented or not 
 let g:NERDToggleCheckAllLines = 1
 
+" scrooloose/nerdcommenter 注释插件 配置============================================================= ]
 
-" babaybus/DoxygenToolkit.vim 函数注释插件 配置
+
+
+" [ babaybus/DoxygenToolkit.vim 函数注释插件 配置=============================================================
 let g:DoxygenToolkit_briefTag_funcName = "yes"
-
 " for C++ style, change the '@' to '\'
 " default C++ comments are : /** ... */. But if you prefer to use ///
 " Doxygen comments just add 'let g:DoxygenToolkit_commentType = "C++"'
@@ -399,17 +417,20 @@ let g:DoxygenToolkit_blockTag = "\\name "
 let g:DoxygenToolkit_classTag = "\\class "
 let g:DoxygenToolkit_authorName = "Qian Gu, guqian110@gmail.com"
 let g:doxygen_enhanced_color = 1
+" babaybus/DoxygenToolkit.vim 函数注释插件 配置============================================================= ]
 
 
-" preservim/nerdtree 目录树插件 配置
-" nerdtree 配置========================================================
+
+" [ preservim/nerdtree 目录树插件 配置=============================================================
 noremap <silent> <F5> :NERDTreeToggle<CR>            " F5 开关目录树
 " open NERDTree automatically when Vim starts
 " Start NERDTree and put the cursor back in the other window.
 autocmd VimEnter * NERDTree | wincmd p
-" nerdtree 配置========================================================
+" preservim/nerdtree 目录树插件 配置============================================================= ]
 
-" YouCompleteMe 配置===================================================
+
+
+" [ YouCompleteMe 配置=============================================================
 "You Complete Me 编译
 "需要安装vim对应版本的python，查看方式为： :version
 "安装 VS2017 或者 VS2015
@@ -446,21 +467,21 @@ let g:ycm_error_symbol = '✗'  "set error or warning signs
 " warning标记
 let g:ycm_warning_symbol = '⚡'	"⚠
 
-
-
 " "highlight YcmErrorSign       标记颜色
 " "highlight YcmWarningSign ctermbg=none
 " "highlight YcmErrorSection      代码中出错字段颜色
 " highlight YcmWarningSection ctermbg=none
 " "highlight YcmErrorLine        出错行颜色
 " "highlight YcmWarningLine
-" 
+ 
 " " 跳转快捷键
 nnoremap <c-k> :YcmCompleter GoToDeclaration<CR>|
 nnoremap <c-h> :YcmCompleter GoToDefinition<CR>| 
 nnoremap <c-j> :YcmCompleter GoToDefinitionElseDeclaration<CR>|
-" " YouCompleteMe 配置===================================================
-" 
+" YouCompleteMe 配置============================================================= ]
+
+
+ 
 " source $VIMRUNTIME/cscope_maps.vim
 " 
 " " gutentags 配置========================================================
@@ -506,10 +527,11 @@ nnoremap <c-j> :YcmCompleter GoToDefinitionElseDeclaration<CR>|
 " let CtagsCscope_Auto_Map = 1
 " let GtagsCscope_Quiet = 1
 " " Gtags 配置========================================================
-" 
 
 
-" Yggdroot/LeaderF 模糊搜索插件 配置
+
+" [ Yggdroot/LeaderF 模糊搜索插件 配置=============================================================
+
 " 此插件需要 GNU GLOBAL(gtags) 的配合
 " Windows下载地址 https://www.gnu.org/software/global/download.html
 " 正则表达式/字符串检索 Leaderf rg ...
@@ -587,8 +609,10 @@ noremap <leader>fp :<C-U><C-R>=printf("Leaderf gtags --previous %s", "")<CR><CR>
 " F2显示出当前文件的函数列表
 noremap <F2> :LeaderfFunction!<cr>           
 
+" Yggdroot/LeaderF 模糊搜索插件 配置============================================================= ]
 
 
+" [ vim-airline/vim-airline 状态栏插件 配置=============================================================
 " vim-airline/vim-airline 状态栏插件 配置
 " 默认只有下面的状态栏
 " 在上面显示buffer/tab相关状态栏 smart tab line 开启
@@ -624,9 +648,32 @@ let g:airline_powerline_fonts = 1
 " let g:airline_symbols.spell = 'Ꞩ'
 " let g:airline_symbols.notexists = 'Ɇ'
 " let g:airline_symbols.whitespace = 'Ξ'
+" vim-airline/vim-airline 状态栏插件 配置============================================================= ]
 
 
+" [ 自定义功能配置=============================================================
 
+" 打开自己写的常用的vim快捷键
+let g:helpTxtOpened = 0
+function OpenMyHelpTxtToggle()
+"	echo g:helpTxtOpened
+"	let g:helpTxtOpened = bufexists('C:\\Users\\CHM\\OneDrive\\工作\\常用\\vim快捷键.txt')
+"	let g:helpTxtOpened = execute "ls"
+"	echo g:helpTxtOpened
+	if g:helpTxtOpened == 1
+		:bd C:\\Users\\CHM\\OneDrive\\工作\\常用\\vim快捷键.txt
+		let g:helpTxtOpened = 0
+	else
+		:vsp C:\\Users\\CHM\\OneDrive\\工作\\常用\\vim快捷键.txt
+		execute "normal \<C-W>\<S-L>"
+		:vertical resize -20
+		let g:helpTxtOpened = 1
+	endif
+endfunction
+" noremap <F1> :call OpenMyHelpTxt()<cr><C-W><S-L><CR>:vertical resize -20<CR>
+noremap <F1> :call OpenMyHelpTxtToggle()<cr>
+
+" 自定义功能配置============================================================= ]
 
 " ====================================================================
 " 下载字体
@@ -643,32 +690,8 @@ if has("gui_running")
     endif
 endif
 " " ====================================================================
-" 
-" " Vim-php-cs-fixer 配置==================================================
-" " If php-cs-fixer is in $PATH, you don't need to define line below
-" let g:php_cs_fixer_path = "C:/wamp64/bin/php/php7.2.4/php-cs-fixer-v2.phar" " define the path to the php-cs-fixer.phar
-" 
-" " If you use php-cs-fixer version 1.x
-" " let g:php_cs_fixer_level = "symfony"                   " options: --level (default:symfony)
-" " let g:php_cs_fixer_config = "default"                  " options: --config
-" " If you want to define specific fixers:
-" "let g:php_cs_fixer_fixers_list = "linefeed,short_tag" " options: --fixers
-" "let g:php_cs_fixer_config_file = '.php_cs'            " options: --config-file
-" " End of php-cs-fixer version 1 config params
-" 
-" " If you use php-cs-fixer version 2.x
-" let g:php_cs_fixer_rules = "@PSR2"          " options: --rules (default:@PSR2)
-" "let g:php_cs_fixer_cache = ".php_cs.cache" " options: --cache-file
-" "let g:php_cs_fixer_config_file = '.php_cs' " options: --config
-" " End of php-cs-fixer version 2 config params
-" 
-" let g:php_cs_fixer_php_path = "php"               " Path to PHP
-" let g:php_cs_fixer_enable_default_mapping = 1     " Enable the mapping by default (<leader>pcd)
-" let g:php_cs_fixer_dry_run = 0                    " Call command with dry-run option
-" let g:php_cs_fixer_verbose = 0                    " Return the output of command if 1, else an inline information.
-" nnoremap <silent><leader>pcd :call PhpCsFixerFixDirectory()<CR>
-" nnoremap <silent><leader>pcf :call PhpCsFixerFixFile()<CR>
-" " =======================================================================
+
+
 
 " " 窗口透明度 配置========================================================
 " if has('gui_running') && has('libcall')
