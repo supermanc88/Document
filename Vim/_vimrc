@@ -415,8 +415,10 @@ let g:DoxygenToolkit_authorTag = "\\author "
 let g:DoxygenToolkit_versionTag = "\\version "
 let g:DoxygenToolkit_blockTag = "\\name "
 let g:DoxygenToolkit_classTag = "\\class "
-let g:DoxygenToolkit_authorName = "Qian Gu, guqian110@gmail.com"
+let g:DoxygenToolkit_authorName = "Heming Cheng, supermanc88@gmail.com"
 let g:doxygen_enhanced_color = 1
+" 不生成多余的换行
+let g:DoxygenToolkit_compactDoc = "yes"
 " babaybus/DoxygenToolkit.vim 函数注释插件 配置============================================================= ]
 
 
