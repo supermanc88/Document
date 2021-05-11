@@ -96,6 +96,10 @@ Plug 'Yggdroot/LeaderF', { 'do': ':LeaderfInstallCExtension' }
 " https://github.com/preservim/nerdcommenter
 Plug 'scrooloose/nerdcommenter'
 
+" babaybus/DoxygenToolkit.vim 函数注释插件
+" https://github.com/babaybus/DoxygenToolkit.vim
+Plug 'babaybus/DoxygenToolkit.vim'
+
 " preservim/nerdtree 目录树插件
 " https://github.com/preservim/nerdtree
 Plug 'preservim/nerdtree'                    							" 目录树
@@ -258,14 +262,20 @@ noremap <Leader>d :ALEDetail<CR>
 function! SelectCcOptions()
 
 let g:CcOptionsCollection = [
-\ {'2.6.32-754' : '-I.
+\ {'2.6.32-754' : '-I. -std=c99
 \ -IS:\\usr\\src\\kernels\\2.6.32-754.el6.x86_64\\include 
 \ -IS:\\usr\\src\\kernels\\2.6.32-754.el6.x86_64\\arch\\x86\\include 
 \ -DMODULE -D__KERNEL__ -D__GNUC__=4 -DCONFIG_64BIT',},
-\ {'UOSV21-5.4.50' : '-I.
-\ Q:\\usr\\src\\linux-headers-5.4.50-amd64-desktop\\include
-\ Q:\\usr\\src\\linux-headers-5.4.50-amd64-desktop\\arch\\x86\\include
+\ {'UOSV21-5.4.50' : '-I. -std=c99
+\ -IQ:\\usr\\src\\linux-headers-5.4.50-amd64-desktop\\include
+\ -IQ:\\usr\\src\\linux-headers-5.4.50-amd64-desktop\\arch\\x86\\include
 \ -DMODULE -D__KERNEL__ -D__GNUC__=8 -DCONFIG_64BIT'},
+\ {'Windows Driver Kits v8.1' : '-I. -std=c99
+\ -IE:\\WindowsKits\\8.1\\Include\\km\\crt
+\ -IE:\\WindowsKits\\8.1\\Include\\km
+\ -IE:\\WindowsKits\\8.1\\Include\\shared
+\ -D_WIN64 -D_AMD64_ -DAMD64 -DDEPRECATE_DDK_FUNCTIONS=1 -DMSC_NOOPT
+\ -D_WIN32_WINNT=0x0601 -DWINVER=0x0601 -DWINNT=1 -DNTDDI_VERSION=0x06010000'},
 \ ]
 
 	" echo len(g:CcOptionsCollection)
@@ -367,6 +377,28 @@ let g:NERDTrimTrailingWhitespace = 1
 
 " Enable NERDCommenterToggle to check all selected lines is commented or not 
 let g:NERDToggleCheckAllLines = 1
+
+
+" babaybus/DoxygenToolkit.vim 函数注释插件 配置
+let g:DoxygenToolkit_briefTag_funcName = "yes"
+
+" for C++ style, change the '@' to '\'
+" default C++ comments are : /** ... */. But if you prefer to use ///
+" Doxygen comments just add 'let g:DoxygenToolkit_commentType = "C++"'
+" let g:DoxygenToolkit_commentType = "C++"
+let g:DoxygenToolkit_briefTag_pre = "\\brief "
+let g:DoxygenToolkit_templateParamTag_pre = "\\tparam "
+let g:DoxygenToolkit_paramTag_pre = "\\param "
+let g:DoxygenToolkit_returnTag = "\\return "
+let g:DoxygenToolkit_throwTag_pre = "\\throw " " @exception is also valid
+let g:DoxygenToolkit_fileTag = "\\file "
+let g:DoxygenToolkit_dateTag = "\\date "
+let g:DoxygenToolkit_authorTag = "\\author "
+let g:DoxygenToolkit_versionTag = "\\version "
+let g:DoxygenToolkit_blockTag = "\\name "
+let g:DoxygenToolkit_classTag = "\\class "
+let g:DoxygenToolkit_authorName = "Qian Gu, guqian110@gmail.com"
+let g:doxygen_enhanced_color = 1
 
 
 " preservim/nerdtree 目录树插件 配置
