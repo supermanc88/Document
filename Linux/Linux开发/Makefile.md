@@ -152,7 +152,7 @@ result_using_var.txt: source.txt
 
 makefile变量的定义使用`:=`而不是`=`
 
-```
+```shell
 srcfiles := $(shell echo src/{00..99}.txt)
 ```
 
@@ -160,7 +160,7 @@ srcfiles := $(shell echo src/{00..99}.txt)
 
 我们定义一个文件名通过使用`%`占位符作词干，这意味着任何名为`src/*.txt`，它可匹配任何内容
 
-```
+```shell
 src/%.txt:
 	@[ -d src ] || mkdir src
 	echo $* > $@
@@ -168,14 +168,39 @@ src/%.txt:
 
 不必为每个文件去运行make，我们可以定义一个依赖所有文件的`PHONY`目标，并且没有任何规则。
 
-```
+```shell
 source : $(srcfiles)
 ```
 
 ## .PHONY
 .PHONY: clean
     - means the word "clean" doesn't represent a file name in this Makefile;
-    - means the Makefile has nothing to do with a file called "clean" 
+        - means the Makefile has nothing to do with a file called "clean" 
       in the same directory.
 
 就是表示 如果在当前目录下有和make 目标相同的文件名或文件夹时，不理会这些情况，仍然执行Makefile文件中的指令。
+
+
+
+例：
+
+```shell
+make clean
+```
+
+但是，如果当前目录中，正好有一个文件叫做clean，那么这个命令不会执行。因为Make发现clean文件已经存在，就认为没有必要重新构建了，就不会执行指定的rm命令。
+
+为了避免这种情况，可以明确声明clean是"伪目标"，写法如下。
+
+```shell
+.PHONY: clean
+clean:
+        rm *.o temp
+```
+
+声明clean是"伪目标"之后，make就不会去检查是否存在一个叫做clean的文件，而是每次运行都执行对应的命令。像.PHONY这样的内置目标名还有不少，可以查看[手册](http://www.gnu.org/software/make/manual/html_node/Special-Targets.html#Special-Targets)。
+
+
+
+参考：[Make 命令教程 - 阮一峰的网络日志 (ruanyifeng.com)](http://www.ruanyifeng.com/blog/2015/02/make.html)
+
