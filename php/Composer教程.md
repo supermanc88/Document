@@ -16,7 +16,7 @@ composer是PHP的一个依赖管理工具。它允许你申明项目所依赖的
 
 Composer 是由 Jordi Boggiano 和 Nils Aderman 创造的一个命令行工具，它的使命就是帮你为项目自动安装所依赖的开发包。Composer 中的很多理念都借鉴自 [npm](https://www.npmjs.com/) 和 [Bundler](http://bundler.io/)，如果你对这两个工具有所了解的话，就会在 composer 中发现他们的身影。Composer 包含了一个依赖解析器，用来处理开发包之间复杂的依赖关系；另外，它还包含了下载器、安装器等有趣的东西。
 
-作为一个用户，你所要做的就是在 `composer.json` 文件中声明当前项目所依赖的开发包，然后运行 `composer.phar install` 就行了。`composer.json` 文件定义了当前项目所依赖的开发包和 composer 的配置信息。下面是一个小型实例：
+作为一个用户，你所要做的就是在 `composer.json` 文件中声明当前项目所依赖的开发包，然后运行 `composer.phar install` 就行了。**`composer.json` 文件定义了当前项目所依赖的开发包和 composer 的配置信息。**下面是一个小型实例：
 
 ```json
 {
@@ -25,6 +25,16 @@ Composer 是由 Jordi Boggiano 和 Nils Aderman 创造的一个命令行工具�
     }
 }
 ```
+
+接下来只要运行以下命令即可安装依赖包：
+
+```shell
+composer install
+```
+
+接下来就开始下载`1.2.*`版本的代码
+
+
 
 
 
@@ -94,9 +104,51 @@ composer install
 
 继续 [上面的例子](https://docs.phpcomposer.com/00-intro.html#Declaring-dependencies)，这里将下载 monolog 到 `vendor/monolog/monolog` 目录。
 
+
+
+### require
+
+除了使用`install`命令外，也可以使用`require`命令快速的安装一个依赖而不需要手动在`composer.json`里添加依赖信息：
+
+```shell
+composer require monolog/monolog
+```
+
+
+
+### update
+
+`update`命令用于更新项目里的所有的包，或者指定的某些包：
+
+```shell
+# 更新所有依赖
+composer update
+
+# 更新指定的包
+composer update monolog/monolog
+
+# 更新指定的多个包
+composer update monolog/monolog symfony/dependency-injection
+
+# 还可以通过对通配符匹配包
+composer update monolog/monolog symfony/*
+```
+
+
+
+### remove
+
+`remove`命令用于移除一个包及其依赖，如果依赖被其他包使用，则无法移除：
+
+```shell
+composer remove monolog/monolog
+```
+
+
+
 ## 自动加载
 
-除了库的下载，Composer 还准备了一个自动加载文件，它可以加载 Composer 下载的库中所有的类文件。使用它，你只需要将下面这行代码添加到你项目的引导文件中：
+除了库的下载，**Composer 还准备了一个自动加载文件，它可以加载 Composer 下载的库中所有的类文件。**使用它，你只需要将下面这行代码添加到你项目的引导文件中：
 
 ```php
 require 'vendor/autoload.php';
