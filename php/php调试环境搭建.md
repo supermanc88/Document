@@ -32,8 +32,10 @@ xdebug.remote_autostart= 1
 
 ## PHPStudy设置
 
+`php.ini`设置`xdebug`插件并修改
+
 ```shell
-;xdebug.remote_enable=Off
-xdebug.remote_enable=1
-xdebug.remote_autostart=1 
+xdebug.profiler_enable=On
+xdebug.remote_enable=On
+xdebug.remote_autostart=On
 ```
